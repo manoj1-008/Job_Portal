@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/header::head('Analytics - JobPortal', 'Platform analytics')}"></head>
+<body>
+    <div th:replace="~{fragments/admin-sidebar::sidebar('Analytics', 'analytics')}"></div>
+
+    <!-- Overview Stats -->
+    <div class="row g-4 mb-5">
+        <div class="col-6 col-xl-3"><div class="stats-card card"><div class="stats-icon primary"><i class="fas fa-users"></i></div><div class="stats-number count-up" th:attr="data-target=${analytics?.totalUsers ?: 0}" th:text="${analytics?.totalUsers ?: 0}">0</div><div class="stats-label">Total Users</div></div></div>
+        <div class="col-6 col-xl-3"><div class="stats-card card"><div class="stats-icon info"><i class="fas fa-briefcase"></i></div><div class="stats-number count-up" th:attr="data-target=${analytics?.totalJobs ?: 0}" th:text="${analytics?.totalJobs ?: 0}">0</div><div class="stats-label">Total Jobs</div></div></div>
+        <div class="col-6 col-xl-3"><div class="stats-card card"><div class="stats-icon success"><i class="fas fa-file-alt"></i></div><div class="stats-number count-up" th:attr="data-target=${analytics?.totalApplications ?: 0}" th:text="${analytics?.totalApplications ?: 0}">0</div><div class="stats-label">Applications</div></div></div>
+        <div class="col-6 col-xl-3"><div class="stats-card card"><div class="stats-icon warning"><i class="fas fa-percentage"></i></div><div class="stats-number" th:text="${analytics?.conversionRate ?: '0%'}">0%</div><div class="stats-label">Conversion Rate</div></div></div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <!-- Monthly Trends -->
+            <div class="card mb-4">
+                <div class="card-header"><h5 class="fw-bold mb-0"><i class="fas fa-chart-bar me-2" style="color: var(--color-primary);"></i> Monthly Trends</h5></div>
+                <div class="card-body"><canvas id="trendsChart" height="250"></canvas></div>
+            </div>
+            <!-- User Growth -->
+            <div class="card">
+                <div class="card-header"><h5 class="fw-bold mb-0"><i class="fas fa-chart-line me-2" style="color: var(--color-success);"></i> User Growth</h5></div>
+                <div class="card-body"><canvas id="userGrowthChart" height="250"></canvas></div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-header"><h5 class="fw-bold mb-0"><i class="fas fa-chart-pie me-2" style="color: var(--color-primary);"></i> User Roles</h5></div>
+                <div class="card-body"><canvas id="roleChart" height="200"></canvas></div>
+            </div>
+            <div class="card mb-4">
+                <div class="card-header"><h5 class="fw-bold mb-0"><i class="fas fa-chart-pie me-2" style="color: var(--color-info);"></i> Job Status</h5></div>
+                <div class="card-body"><canvas id="jobStatusChart" height="200"></canvas></div>
+            </div>
+            <div class="card">
+                <div class="card-header"><h5 class="fw-bold mb-0"><i class="fas fa-chart-pie me-2" style="color: var(--color-warning);"></i> Application Status</h5></div>
+                <div class="card-body"><canvas id="appStatusChart" height="200"></canvas></div>
+            </div>
+        </div>
+    </div>
+
+    </main></div>
+    <div th:replace="~{fragments/header::scripts}"></div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Trends
+        const tCtx = document.getElementById('trendsChart');
+        if (tCtx) {
+            new Chart(tCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+                    datasets: [
+                        { label: 'Users', data: [/*server*/], backgroundColor: 'rgba(139,92,246,0.6)', borderRadius: 4 },
+                        { label: 'Jobs', data: [/*server*/], backgroundColor: 'rgba(59,130,246,0.6)', borderRadius: 4 },
+                        { label: 'Applications', data: [/*server*/], backgroundColor: 'rgba(16,185,129,0.6)', borderRadius: 4 }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { position: 'top', labels: { color: 'rgba(255,255,255,0.6)', usePointStyle: true } } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: 'rgba(255,255,255,0.5)' } },
+                        x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.5)' } }
+                    }
+                }
+            });
+        }
+        // User Growth
+        const ugCtx = document.getElementById('userGrowthChart');
+        if (ugCtx) {
+            new Chart(ugCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+                    datasets: [{ label: 'Total Users', data: [/*server*/], borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', fill: true, tension: 0.4 }]
+                },
+                options: { responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: 'rgba(255,255,255,0.6)' } } },
+                    scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: 'rgba(255,255,255,0.5)' } }, x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.5)' } } }
+                }
+            });
+        }
+        // Donut charts
+        ['roleChart','jobStatusChart','appStatusChart'].forEach(id => {
+            const ctx = document.getElementById(id);
+            if (ctx) {
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: { labels: ['A','B','C'], datasets: [{ data: [33,33,34], backgroundColor: ['#8b5cf6','#f59e0b','#3b82f6','#10b981','#ef4444'], borderWidth: 0 }] },
+                    options: { responsive: true, maintainAspectRatio: false, cutout: '70%',
+                        plugins: { legend: { position: 'bottom', labels: { color: 'rgba(255,255,255,0.6)', padding: 10, usePointStyle: true, pointStyle: 'circle' } } }
+                    }
+                });
+            }
+        });
+    });
+    </script>
+</body>
+</html>
+

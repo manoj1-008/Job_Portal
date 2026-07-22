@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/header::head('Reports - JobPortal', 'Platform reports')}"></head>
+<body>
+    <div th:replace="~{fragments/admin-sidebar::sidebar('Reports', 'reports')}"></div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <!-- Report Cards -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                    <div class="card card-lift" style="cursor: pointer;">
+                        <div class="card-body text-center">
+                            <div class="stats-icon primary mx-auto"><i class="fas fa-file-pdf"></i></div>
+                            <h5 class="fw-bold mt-3">Weekly Summary Report</h5>
+                            <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">Platform activity, new users, jobs, and applications for the past week.</p>
+                            <button class="btn btn-primary-gradient btn-sm"><i class="fas fa-download"></i> Download</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card card-lift" style="cursor: pointer;">
+                        <div class="card-body text-center">
+                            <div class="stats-icon success mx-auto"><i class="fas fa-file-excel"></i></div>
+                            <h5 class="fw-bold mt-3">Monthly Analytics Report</h5>
+                            <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">Comprehensive monthly platform analytics and growth metrics.</p>
+                            <button class="btn btn-primary-gradient btn-sm"><i class="fas fa-download"></i> Download</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Companies -->
+            <div class="card">
+                <div class="card-header"><h5 class="fw-bold mb-0"><i class="fas fa-trophy me-2" style="color: var(--color-warning);"></i> Top Employers</h5></div>
+                <div class="card-body p-0">
+                    <div th:if="${topEmployers != null and !topEmployers.isEmpty()}">
+                        <div th:each="emp : ${topEmployers}" class="px-4 py-3 d-flex justify-content-between align-items-center" style="border-bottom: 1px solid var(--border-secondary);">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="profile-avatar" style="width: 36px; height: 36px; font-size: 0.85rem;"><span th:text="${#strings.substring(emp.name, 0, 1)}">E</span></div>
+                                <div><div class="fw-semibold" style="font-size: var(--font-size-sm);" th:text="${emp.name}">Company</div></div>
+                            </div>
+                            <div class="text-end"><span class="fw-bold" th:text="${emp.jobsCount}">0</span><span style="color: var(--text-muted); font-size: var(--font-size-xs);"> jobs</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-header"><h5 class="fw-bold mb-0"><i class="fas fa-filter me-2" style="color: var(--color-primary);"></i> Generate Report</h5></div>
+                <div class="card-body">
+                    <div class="form-group"><label class="form-label">Report Type</label><select class="form-input"><option>Weekly Summary</option><option>Monthly Analytics</option><option>User Report</option><option>Job Report</option><option>Application Report</option></select></div>
+                    <div class="form-group"><label class="form-label">Date Range</label><select class="form-input"><option>Last 7 Days</option><option>Last 30 Days</option><option>Last Quarter</option><option>Last Year</option><option>Custom Range</option></select></div>
+                    <div class="form-group"><label class="form-label">Format</label><select class="form-input"><option>PDF</option><option>CSV</option><option>Excel</option></select></div>
+                    <button class="btn btn-primary-gradient w-100"><i class="fas fa-file-export"></i> Generate Report</button>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header"><h5 class="fw-bold mb-0"><i class="fas fa-history me-2" style="color: var(--color-info);"></i> Recent Reports</h5></div>
+                <div class="card-body p-0">
+                    <div class="activity-item px-4">
+                        <div class="activity-icon badge badge-info"><i class="fas fa-file-pdf"></i></div>
+                        <div class="activity-content"><div class="activity-text">Monthly Report - Jan 2024</div><div class="activity-time">Downloaded 2 days ago</div></div>
+                    </div>
+                    <div class="activity-item px-4">
+                        <div class="activity-icon badge badge-success"><i class="fas fa-file-excel"></i></div>
+                        <div class="activity-content"><div class="activity-text">Weekly Summary - Week 4</div><div class="activity-time">Downloaded 5 days ago</div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </main></div>
+    <div th:replace="~{fragments/header::scripts}"></div>
+</body>
+</html>
+

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="en">
+<head th:replace="~{fragments/header::head('Employer Dashboard - JobPortal', 'Your recruitment dashboard')}"></head>
+<body>
+<div th:replace="~{fragments/employer-sidebar::sidebar('Dashboard', 'dashboard')}"></div>
+<div class="dashboard-main">
+    <div class="container-fluid">
+        <div class="glass-card-lg p-5 mb-5 fade-in">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <div class="d-flex align-items-center gap-4 mb-3">
+                        <div class="profile-avatar" style="width: 72px; height: 72px; font-size: 2rem;">
+                            <span th:text="${currentUser != null ? #strings.substring(currentUser.fullName, 0, 1) : 'E'}">E</span>
+                        </div>
+                        <div>
+                            <h2 class="fw-bold mb-1" style="font-size: 1.8rem;">Welcome back, <span th:text="${currentUser?.fullName ?: 'Employer'}">Employer</span></h2>
+                            <p style="color: var(--text-secondary);">Your recruitment hub. Manage jobs, review applicants, and find top talent.</p>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-wrap gap-3 mt-4">
+                        <a th:href="@{/employer/jobs/post}" class="btn btn-primary-gradient"><i class="fas fa-plus"></i> Post New Job</a>
+                        <a th:href="@{/employer/applicants}" class="btn btn-secondary-glass"><i class="fas fa-users"></i> View Applicants</a>
+                    </div>
+                </div>
+                <div class="col-lg-4 d-none d-lg-block">
+                    <div class="glass p-4 text-center">
+                        <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem;">Jobs Posted</div>
+                        <div style="font-size: 2.5rem; font-weight: 800; color: var(--color-primary);" th:text="${stats?.employerJobCount ?: 0}">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row g-4 mb-5">
+            <div class="col-6 col-xl-2">
+                <div class="stats-card card fade-in">
+                    <div class="stats-icon primary"><i class="fas fa-briefcase"></i></div>
+                    <div class="stats-number count-up" th:attr="data-target=${stats != null ? stats.employerJobCount : 0}" th:text="${stats?.employerJobCount ?: 0}">0</div>
+                    <div class="stats-label">Jobs Posted</div>
+                </div>
+            </div>
+            <div class="col-6 col-xl-2">
+                <div class="stats-card card fade-in">
+                    <div class="stats-icon success"><i class="fas fa-check-circle"></i></div>
+                    <div class="stats-number count-up" th:attr="data-target=${stats != null ? stats.employerActiveJobs : 0}" th:text="${stats?.employerActiveJobs ?: 0}">0</div>
+                    <div class="stats-label">Active Jobs</div>
+                </div>
+            </div>
+            <div class="col-6 col-xl-2">
+                <div class="stats-card card fade-in">
+                    <div class="stats-icon info"><i class="fas fa-users"></i></div>
+                    <div class="stats-number count-up" th:attr="data-target=${stats != null ? stats.employerTotalApplications : 0}" th:text="${stats?.employerTotalApplications ?: 0}">0</div>
+                    <div class="stats-label">Total Applicants</div>
+                </div>
+            </div>
+            <div class="col-6 col-xl-2">
+                <div class="stats-card card fade-in">
+                    <div class="stats-icon warning"><i class="fas fa-clock"></i></div>
+                    <div class="stats-number count-up" th:attr="data-target=${stats != null ? stats.employerPendingApplications : 0}" th:text="${stats?.employerPendingApplications ?: 0}">0</div>
+                    <div class="stats-label">Pending</div>
+                </div>
+            </div>
+            <div class="col-6 col-xl-2">
+                <div class="stats-card card fade-in">
+                    <div class="stats-icon pink"><i class="fas fa-search"></i></div>
+                    <div class="stats-number count-up" th:attr="data-target=${stats != null ? stats.employerReviewedApplications : 0}" th:text="${stats?.employerReviewedApplications ?: 0}">0</div>
+                    <div class="stats-label">Reviewing</div>
+                </div>
+            </div>
+            <div class="col-6 col-xl-2">
+                <div class="stats-card card fade-in">
+                    <div class="stats-icon pink"><i class="fas fa-calendar-check"></i></div>
+                    <div class="stats-number count-up" th:attr="data-target=${stats != null ? stats.employerTotalApplications : 0}" th:text="${stats?.employerTotalApplications ?: 0}">0</div>
+                    <div class="stats-label">Interviews</div>
+                </div>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="fw-bold mb-0"><i class="fas fa-chart-line me-2" style="color: var(--color-primary);"></i> Applications Over Time</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="applicationsChart" height="220"></canvas>
+                    </div>
+                </div>
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="fw-bold mb-0"><i class="fas fa-briefcase me-2" style="color: var(--color-info);"></i> Your Recent Jobs</h5>
+                        <a th:href="@{/employer/jobs}" class="btn btn-ghost btn-sm">View All <i class="fas fa-arrow-right ms-1"></i></a>
+                    </div>
+                    <div class="card-body p-0">
+                        <div th:if="${recentJobs != null and !recentJobs.isEmpty()}">
+                            <div th:each="job : ${recentJobs}" class="px-4 py-3" style="border-bottom: 1px solid var(--border-secondary);">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="fw-semibold" th:text="${job.title()}">Job Title</div>
+                                        <div style="font-size: var(--font-size-xs); color: var(--text-muted);">
+                                            <span th:text="${job.applicationCount()}">0</span> applicants
+                                            <span class="ms-2" th:if="${job.active()}">Active</span>
+                                            <span class="ms-2" th:unless="${job.active()}">Inactive</span>
+                                        </div>
+                                    </div>
+                                    <span class="badge bg-primary" th:text="${#temporals.format(job.createdAt(), 'MMM dd')}">Date</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div th:if="${recentJobs == null or recentJobs.isEmpty()}" class="empty-state p-4 text-center">
+                            <div class="empty-icon" style="font-size: 2rem;"><i class="fas fa-briefcase"></i></div>
+                            <h4>No jobs posted yet</h4>
+                            <p>Post your first job to start receiving applications.</p>
+                            <a th:href="@{/employer/jobs/post}" class="btn btn-primary-gradient">Post a Job</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="fw-bold mb-0"><i class="fas fa-filter me-2" style="color: var(--color-primary);"></i> Hiring Pipeline</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3 text-center">
+                            <div class="col-3">
+                                <div class="glass p-3">
+                                    <div class="fw-bold" style="font-size: 1.5rem; color: var(--color-warning);" th:text="${stats?.employerPendingApplications ?: 0}">0</div>
+                                    <div style="font-size: var(--font-size-xs); color: var(--text-muted);">Applied</div>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="glass p-3">
+                                    <div class="fw-bold" style="font-size: 1.5rem; color: var(--color-info);" th:text="${stats?.employerReviewedApplications ?: 0}">0</div>
+                                    <div style="font-size: var(--font-size-xs); color: var(--text-muted);">Reviewing</div>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="glass p-3">
+                                    <div class="fw-bold" style="font-size: 1.5rem; color: var(--color-primary);">0</div>
+                                    <div style="font-size: var(--font-size-xs); color: var(--text-muted);">Shortlisted</div>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="glass p-3">
+                                    <div class="fw-bold" style="font-size: 1.5rem; color: var(--color-success);">0</div>
+                                    <div style="font-size: var(--font-size-xs); color: var(--text-muted);">Hired</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="fw-bold mb-0"><i class="fas fa-trophy me-2" style="color: var(--color-warning);"></i> Top Jobs</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div th:if="${recentJobs != null and !recentJobs.isEmpty()}">
+                            <div th:each="job, iterStat : ${recentJobs}" th:if="${iterStat.index < 5}" class="px-4 py-3" style="border-bottom: 1px solid var(--border-secondary);">
+                                <div class="fw-semibold" style="font-size: var(--font-size-sm);" th:text="${job.title()}">Job</div>
+                                <div style="font-size: var(--font-size-xs); color: var(--text-muted);">
+                                    <span th:text="${job.applicationCount()}">0</span> applicants
+                                </div>
+                            </div>
+                        </div>
+                        <div th:if="${recentJobs == null or recentJobs.isEmpty()}" class="empty-state p-4 text-center">
+                            <p>Post your first job to see performance here.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="fw-bold mb-0"><i class="fas fa-chart-pie me-2" style="color: var(--color-primary);"></i> Applications by Job</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="jobsPieChart" height="250"></canvas>
+                    </div>
+                </div>
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="fw-bold mb-0"><i class="fas fa-bolt me-2" style="color: var(--color-warning);"></i> Activity Feed</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div th:if="${recentJobs != null and !recentJobs.isEmpty()}">
+                            <div th:each="job : ${recentJobs}" class="activity-item px-4">
+                                <div class="activity-icon badge bg-primary"><i class="fas fa-briefcase"></i></div>
+                                <div class="activity-content">
+                                    <div class="activity-text">
+                                        Job posted: <strong th:text="${job.title()}">Title</strong>
+                                    </div>
+                                    <div class="activity-time" th:text="${#temporals.format(job.createdAt(), 'MMM dd, yyyy')}">Date</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div th:if="${recentJobs == null or recentJobs.isEmpty()}" class="empty-state p-4 text-center">
+                            <p>No recent activity.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var ctx = document.getElementById('applicationsChart');
+    if (ctx) {
+        ctx = ctx.getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                datasets: [{
+                    label: 'Applications',
+                    data: [0, 0, 0, 0],
+                    borderColor: '#6366f1',
+                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+    }
+    var ctx2 = document.getElementById('jobsPieChart');
+    if (ctx2) {
+        ctx2 = ctx2.getContext('2d');
+        new Chart(ctx2, {
+            type: 'doughnut',
+            data: {
+                labels: ['Applications'],
+                datasets: [{
+                    data: [1],
+                    backgroundColor: ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom' } }
+            }
+        });
+    }
+});
+</script>
+<div th:replace="~{fragments/header::scripts}"></div>
+</body>
+</html>

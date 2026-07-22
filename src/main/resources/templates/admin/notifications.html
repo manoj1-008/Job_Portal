@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/header::head('Notifications - JobPortal', 'Admin notifications')}"></head>
+<body>
+    <div th:replace="~{fragments/admin-sidebar::sidebar('Notifications', 'notifications')}"></div>
+
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold mb-0"><i class="fas fa-bell me-2" style="color: var(--color-warning);"></i> Admin Notifications</h5>
+            <button class="btn btn-ghost btn-sm"><i class="fas fa-check-double"></i> Mark All Read</button>
+        </div>
+        <div class="card-body p-0">
+            <div th:if="${notifications != null and !notifications.isEmpty()}">
+                <div th:each="n : ${notifications}" class="activity-item px-4" th:style="${!n.read} ? 'background: var(--bg-card);' : ''">
+                    <div class="activity-icon" th:classappend="${n.type == 'SYSTEM'} ? 'badge badge-warning' : ${n.type == 'USER'} ? 'badge badge-info' : 'badge badge-primary'">
+                        <i th:class="${n.type == 'SYSTEM'} ? 'fas fa-cog' : ${n.type == 'USER'} ? 'fas fa-user' : 'fas fa-bell'"></i>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-text" th:text="${n.message}">Message</div>
+                        <div class="activity-time d-flex justify-content-between">
+                            <span th:text="${#temporals.format(n.createdAt(), 'MMM dd, yyyy h:mm a')}">Date</span>
+                            <span th:if="${!n.read}" class="badge badge-primary" style="font-size: 0.6rem;">New</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div th:if="${notifications == null or notifications.isEmpty()}" class="empty-state">
+                <div class="empty-icon"><i class="far fa-bell"></i></div>
+                <h4>No notifications</h4>
+                <p>System notifications will appear here.</p>
+            </div>
+        </div>
+    </div>
+
+    </main></div>
+    <div th:replace="~{fragments/header::scripts}"></div>
+</body>
+</html>
+

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<body>
+<footer th:fragment="footer" class="footer-glass">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <h5 class="footer-title">
+                    <i class="fas fa-briefcase me-2" style="color: var(--accent-purple);"></i>JobPortal
+                </h5>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.7;">
+                    Your gateway to premier career opportunities. Our advanced placement portal connects
+                    talented professionals with leading companies worldwide.
+                </p>
+                <div class="social-links mt-3">
+                    <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            <div class="col-6 col-lg-2">
+                <h5 class="footer-title">Quick Links</h5>
+                <ul class="footer-links">
+                    <li><a th:href="@{/}">Home</a></li>
+                    <li><a th:href="@{/jobs}">Browse Jobs</a></li>
+                    <li><a th:href="@{/about}">About Us</a></li>
+                    <li><a th:href="@{/contact}">Contact</a></li>
+                </ul>
+            </div>
+            <div class="col-6 col-lg-2">
+                <h5 class="footer-title">For Employers</h5>
+                <ul class="footer-links">
+                    <li><a th:href="@{/employer/register}">Post a Job</a></li>
+                    <li><a th:href="@{/login}">Employer Login</a></li>
+                    <li><a href="#">Pricing</a></li>
+                    <li><a href="#">Resources</a></li>
+                </ul>
+            </div>
+            <div class="col-6 col-lg-2">
+                <h5 class="footer-title">For Seekers</h5>
+                <ul class="footer-links">
+                    <li><a th:href="@{/student/register}">Create Account</a></li>
+                    <li><a th:href="@{/login}">Seeker Login</a></li>
+                    <li><a th:href="@{/jobs}">Search Jobs</a></li>
+                    <li><a href="#">Career Tips</a></li>
+                </ul>
+            </div>
+            <div class="col-6 col-lg-2">
+                <h5 class="footer-title">Support</h5>
+                <ul class="footer-links">
+                    <li><a href="#">Help Center</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">FAQ</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom d-flex flex-column flex-md-row justify-content-between align-items-center">
+            <span>&copy; <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}">2024</span> JobPortal. All rights reserved.</span>
+            <span>Empowering Careers Worldwide</span>
+        </div>
+    </div>
+</footer>
+
+<div th:fragment="sidebar">
+    <div class="sidebar-overlay"></div>
+</div>
+</body>
+</html>
+

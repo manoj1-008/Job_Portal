@@ -1,0 +1,41 @@
+Index: jobportal/src/main/resources/templates/jobs/category.html
+ID: job-category
+==================================================================
+--- (new file)
++++ (new file)
+@@ -0,0 +1,99 @@
++<!DOCTYPE html>
++<html xmlns:th="http://www.thymeleaf.org"
++      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
++      lang="en">
++<head th:replace="~{fragments/header::head('' + ${category} + ' Jobs - JobPortal', 'Browse jobs by category')}"></head>
++<body>
++    <div class="aurora-bg"></div>
++    <div class="aurora-blob aurora-blob-1"></div>
++    <div class="aurora-blob aurora-blob-2"></div>
++    <div class="mouse-glow"></div>
++
++    <nav th:replace="~{fragments/header::navbar}"></nav>
++
++    <div class="container py-4">
++        <!-- Category Header -->
++        <div class="glass-card-lg p-5 mb-5 text-center fade-in">
++            <div style="font-size: 3rem; color: var(--color-primary); margin-bottom: 1rem;">
++                <i th:class="${category == 'Technology'} ? 'fas fa-microchip' : ${category == 'Healthcare'} ? 'fas fa-heartbeat' : ${category == 'Finance'} ? 'fas fa-chart-line' : ${category == 'Marketing'} ? 'fas fa-bullhorn' : ${category == 'Education'} ? 'fas fa-graduation-cap' : ${category == 'Cyber Security'} ? 'fas fa-shield-halved' : 'fas fa-briefcase'"></i>
++            </div>
++            <h1 class="fw-bold mb-2" style="font-size: 2.5rem; letter-spacing: -1px;" th:text="${category} + ' Jobs'">Category</h1>
++            <p style="color: var(--text-secondary); font-size: var(--font-size-lg); max-width: 600px; margin: 0 auto;">
++                Explore the latest <span th:text="${category}">category</span> opportunities from top companies
++            </p>
++            <div class="d-flex justify-content-center gap-2 mt-4">
++                <span class="badge badge-primary" style="font-size: 1rem; padding: 8px 20px;">
++                    <span th:text="${totalJobs ?: 0}">0</span> jobs available
++                </span>
++            </div>
++        </div>
++
++        <!-- Sub Categories -->
++        <div class="mb-4">
++            <h5 class="fw-bold mb-3"><i class="fas fa-th-large me-2" style="color: var(--color-primary);"></i> Sub Categories</h5>
++            <div class="d-flex flex-wrap gap-2">
++                <a th:href

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="en">
+<head th:replace="~{fragments/header::head('Contact Us - JobPortal', 'Get in touch with the JobPortal team')}"></head>
+<body>
+    <div class="aurora-bg"></div>
+    <div class="aurora-blob aurora-blob-1"></div>
+    <div class="aurora-blob aurora-blob-2"></div>
+    <div class="mouse-glow"></div>
+
+    <nav th:replace="~{fragments/header::navbar}"></nav>
+
+    <section class="py-5">
+        <div class="container">
+            <div class="row g-5">
+                <div class="col-lg-5">
+                    <div class="fade-in">
+                        <span class="badge badge-glass purple mb-3">
+                            <i class="fas fa-envelope me-1"></i> Get In Touch
+                        </span>
+                        <h1 class="fw-bold mb-3" style="font-size: 2.5rem;">Let's Talk About Your Career</h1>
+                        <p style="color: var(--text-secondary); font-size: var(--font-size-lg);">
+                            Have questions about our platform? We're here to help you every step of the way.
+                        </p>
+                        <div class="d-flex flex-column gap-3 mt-4">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="glass p-3" style="border-radius: var(--radius-lg);">
+                                    <i class="fas fa-map-marker-alt" style="color: var(--color-primary);"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-semibold">Visit Us</div>
+                                    <div style="color: var(--text-secondary); font-size: var(--font-size-sm);">123 Career Street, Tech City, TC 10001</div>
+                            </div>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="glass p-3" style="border-radius: var(--radius-lg);">
+                                    <i class="fas fa-phone" style="color: var(--color-primary);"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-semibold">Call Us</div>
+                                    <div style="color: var(--text-secondary); font-size: var(--font-size-sm);">+1 (555) 123-4567</div>
+                            </div>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="glass p-3" style="border-radius: var(--radius-lg);">
+                                    <i class="fas fa-envelope" style="color: var(--color-primary);"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-semibold">Email Us</div>
+                                    <div style="color: var(--text-secondary); font-size: var(--font-size-sm);">support@jobportal.com</div>
+                            </div>
+                    </div>
+                <div class="col-lg-7">
+                    <div class="glass-card-lg p-5 fade-in">
+                        <h3 class="fw-bold mb-4">Send Us a Message</h3>
+                        <form th:action="@{/contact}" method="post" class="row g-4">
+                            <div class="col-md-6">
+                                <label class="form-label">Full Name</label>
+                                <input type="text" name="name" class="form-input" placeholder="John Doe" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Email Address</label>
+                                <input type="email" name="email" class="form-input" placeholder="john@example.com" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Subject</label>
+                                <input type="text" name="subject" class="form-input" placeholder="How can we help?" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Message</label>
+                                <textarea name="message" class="form-input" rows="6" placeholder="Write your message here..." required></textarea>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary-gradient btn-lg">
+                                    <i class="fas fa-paper-plane"></i> Send Message
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+            </div>
+    </section>
+
+    <footer th:replace="~{fragments/footer::footer}"></footer>
+    <div th:replace="~{fragments/header::scripts}"></div>
+</body>
+</html>

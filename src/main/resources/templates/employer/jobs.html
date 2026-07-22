@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/header::head('My Jobs - JobPortal', 'Manage your job postings')}"></head>
+<body>
+    <div th:replace="~{fragments/employer-sidebar::sidebar('My Jobs', 'jobs')}"></div>
+
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold mb-0"><i class="fas fa-briefcase me-2" style="color: var(--color-primary);"></i> Job Postings</h5>
+            <a th:href="@{/employer/jobs/post}" class="btn btn-primary-gradient btn-sm">
+                <i class="fas fa-plus"></i> Post New Job
+            </a>
+        </div>
+        <div class="card-body p-0">
+            <div th:if="${jobs != null and !jobs.isEmpty()}">
+                <div class="table-responsive">
+                    <table class="table-glass">
+                        <thead>
+                            <tr>
+                                <th>Job Title</th>
+                                <th>Location</th>
+                                <th>Type</th>
+                                <th>Posted</th>
+                                <th>Deadline</th>
+                                <th>Applicants</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="job : ${jobs}">
+                                <td>
+                                    <div class="fw-semibold" style="color: var(--text-primary);" th:text="${job.title()}">Title</div>
+                                </td>
+                                <td th:text="${job.location()}">Location</td>
+                                <td><span class="badge badge-info" th:text="${job.employmentType() ?: 'Full-time'}">Type</span></td>
+                                <td style="font-size: var(--font-size-sm);" th:text="${#temporals.format(job.createdAt(), 'MMM dd')}">Date</td>
+                                <td style="font-size: var(--font-size-sm);" th:text="${#temporals.format(job.deadline(), 'MMM dd')}">Deadline</td>
+                                <td>
+                                    <span class="fw-semibold" th:text="${job.applicationCount()}">0</span>
+                                </td>
+                                <td>
+                                    <span class="status-badge" th:class="${job.active()} ? 'active' : 'inactive'"
+                                          th:text="${job.active()} ? 'Active' : 'Inactive'">Status</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-1">
+                                        <a th:href="@{'/employer/jobs/' + ${job.id()} + '/edit'}" class="btn btn-ghost btn-icon btn-sm" title="Edit">
+                                            <i class="fas fa-edit" style="color: var(--color-info);"></i>
+                                        </a>
+                                        <a th:href="@{'/employer/jobs/' + ${job.id()} + '/toggle'}" class="btn btn-ghost btn-icon btn-sm" th:title="${job.active()} ? 'Deactivate' : 'Activate'">
+                                            <i th:class="${job.active()} ? 'fas fa-pause' : 'fas fa-play'" style="color: var(--color-warning);"></i>
+                                        </a>
+                                        <a th:href="@{'/employer/applicants?jobId=' + ${job.id()}}" class="btn btn-ghost btn-icon btn-sm" title="View Applicants">
+                                            <i class="fas fa-users" style="color: var(--color-primary);"></i>
+                                        </a>
+                                        <button class="btn btn-ghost btn-icon btn-sm" title="Delete" data-bs-toggle="modal"
+                                                data-bs-target="#deleteJobModal"
+                                                th:attr="data-job-id=${job.id()}, data-job-title=${job.title()}">
+                                            <i class="fas fa-trash" style="color: var(--color-danger);"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div th:if="${jobs == null or jobs.isEmpty()}" class="empty-state">
+                <div class="empty-icon"><i class="fas fa-briefcase"></i></div>
+                <h4>No jobs posted yet</h4>
+                <p>Post your first job to start receiving applications from top talent.</p>
+                <a th:href="@{/employer/jobs/post}" class="btn btn-primary-gradient">
+                    <i class="fas fa-plus"></i> Post Your First Job
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <div th:if="${totalPages > 1}" class="pagination mt-4 justify-content-center">
+        <div th:each="i : ${#numbers.sequence(0, totalPages - 1)}" class="page-item" th:classappend="${i == currentPage} ? 'active' : ''">
+            <a class="page-link" th:href="@{/employer/jobs(page=${i})}" th:text="${i + 1}">1</a>
+        </div>
+    </div>
+
+    <!-- Delete Modal -->
+    <div class="modal modal-glass fade" id="deleteJobModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" style="color: var(--color-danger);">Delete Job</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p style="color: var(--text-secondary);">Are you sure you want to delete <strong id="deleteJobTitle">this job</strong>? This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary-glass" data-bs-dismiss="modal">Cancel</button>
+                    <a th:href="@{/employer/jobs/}" id="deleteJobConfirm" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Delete Job
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </main></div>
+    <div th:replace="~{fragments/header::scripts}"></div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteModal = document.getElementById('deleteJobModal');
+        if (deleteModal) {
+            deleteModal.addEventListener('show.bs.modal', function(event) {
+                const btn = event.relatedTarget;
+                const jobId = btn.getAttribute('data-job-id');
+                const jobTitle = btn.getAttribute('data-job-title');
+                document.getElementById('deleteJobTitle').textContent = jobTitle || 'this job';
+                document.getElementById('deleteJobConfirm').href = '/employer/jobs/' + jobId + '/delete';
+            });
+        }
+    });
+    </script>
+</body>
+</html>
+

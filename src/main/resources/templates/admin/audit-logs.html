@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/header::head('Audit Logs - JobPortal', 'System audit trail')}"></head>
+<body>
+    <div th:replace="~{fragments/admin-sidebar::sidebar('Audit Logs', 'audit-logs')}"></div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form class="row g-3 align-items-end">
+                <div class="col-md-3"><label class="form-label">Action</label><select class="form-input"><option value="">All Actions</option><option>Login</option><option>Registration</option><option>Job Posted</option><option>Job Deleted</option><option>User Disabled</option><option>User Deleted</option></select></div>
+                <div class="col-md-3"><label class="form-label">User</label><input type="text" class="form-input" placeholder="Filter by user..."></div>
+                <div class="col-md-4"><label class="form-label">Date Range</label><input type="text" class="form-input" placeholder="Select date range..."></div>
+                <div class="col-md-2"><button class="btn btn-primary-gradient w-100"><i class="fas fa-search"></i> Search</button></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Audit Log Table -->
+    <div class="card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table-glass">
+                    <thead><tr><th>Timestamp</th><th>User</th><th>Action</th><th>Details</th><th>IP Address</th></tr></thead>
+                    <tbody>
+                        <tr><td style="font-size: var(--font-size-sm);">2024-01-15 14:32:21</td><td><div class="d-flex align-items-center gap-2"><div class="profile-avatar" style="width: 28px; height: 28px; font-size: 0.7rem;"><span>A</span></div><span>admin@jobportal.com</span></div></td><td><span class="badge badge-info">Login</span></td><td style="font-size: var(--font-size-sm);">Admin login successful</td><td style="font-size: var(--font-size-sm); color: var(--text-muted);">192.168.1.1</td></tr>
+                        <tr><td style="font-size: var(--font-size-sm);">2024-01-15 14:15:10</td><td><div class="d-flex align-items-center gap-2"><div class="profile-avatar" style="width: 28px; height: 28px; font-size: 0.7rem; background: var(--gradient-warning);"><span>J</span></div><span>john@company.com</span></div></td><td><span class="badge badge-success">Job Posted</span></td><td style="font-size: var(--font-size-sm);">Senior Developer position created</td><td style="font-size: var(--font-size-sm); color: var(--text-muted);">10.0.0.5</td></tr>
+                        <tr><td style="font-size: var(--font-size-sm);">2024-01-15 13:45:33</td><td><div class="d-flex align-items-center gap-2"><div class="profile-avatar" style="width: 28px; height: 28px; font-size: 0.7rem; background: var(--gradient-info);"><span>S</span></div><span>sarah@email.com</span></div></td><td><span class="badge badge-primary">Registration</span></td><td style="font-size: var(--font-size-sm);">New student account created</td><td style="font-size: var(--font-size-sm); color: var(--text-muted);">203.0.113.42</td></tr>
+                        <tr><td style="font-size: var(--font-size-sm);">2024-01-15 12:20:15</td><td><div class="d-flex align-items-center gap-2"><div class="profile-avatar" style="width: 28px; height: 28px; font-size: 0.7rem;"><span>A</span></div><span>admin@jobportal.com</span></div></td><td><span class="badge badge-danger">User Disabled</span></td><td style="font-size: var(--font-size-sm);">Disabled employer account: spam@company.com</td><td style="font-size: var(--font-size-sm); color: var(--text-muted);">192.168.1.1</td></tr>
+                        <tr><td style="font-size: var(--font-size-sm);">2024-01-15 11:05:00</td><td><div class="d-flex align-items-center gap-2"><div class="profile-avatar" style="width: 28px; height: 28px; font-size: 0.7rem; background: var(--gradient-warning);"><span>M</span></div><span>mike@tech.com</span></div></td><td><span class="badge badge-info">Application</span></td><td style="font-size: var(--font-size-sm);">New application received for UX Designer</td><td style="font-size: var(--font-size-sm); color: var(--text-muted);">10.0.0.8</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination mt-4 justify-content-center">
+        <div class="page-item active"><a class="page-link" href="#">1</a></div>
+        <div class="page-item"><a class="page-link" href="#">2</a></div>
+        <div class="page-item"><a class="page-link" href="#">3</a></div>
+        <div class="page-item"><a class="page-link" href="#">4</a></div>
+        <div class="page-item"><a class="page-link" href="#">5</a></div>
+    </div>
+
+    </main></div>
+    <div th:replace="~{fragments/header::scripts}"></div>
+</body>
+</html>
+

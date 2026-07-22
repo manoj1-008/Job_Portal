@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="en">
+<head th:replace="~{fragments/header::head('Login - JobPortal', 'Sign in to your account')}"></head>
+<body>
+    <div class="aurora-bg"></div>
+    <div class="aurora-blob aurora-blob-1"></div>
+    <div class="aurora-blob aurora-blob-2"></div>
+    <div class="mouse-glow"></div>
+
+    <div class="auth-container">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-5">
+                    <div class="glass-card-lg auth-card">
+                        <div class="text-center mb-4">
+                            <a th:href="@{/}" class="d-inline-block mb-4" style="font-size: 2rem;">
+                                <i class="fas fa-briefcase" style="color: var(--color-primary);"></i>
+                            </a>
+                            <h2 class="auth-title">Welcome Back</h2>
+                            <p class="auth-subtitle">Sign in to continue to your account</p>
+                        </div>
+
+                        <!-- Error Message -->
+                        <div th:if="${param.error != null}" class="alert alert-danger mb-4">
+                            <i class="fas fa-exclamation-circle alert-icon"></i>
+                            <div class="alert-content">
+                                <span th:text="${param.error[0]}">Invalid email or password</span>
+                            </div>
+                        </div>
+
+                        <!-- Success Message -->
+                        <div th:if="${param.success != null && !param.success.isEmpty()}" class="alert alert-success mb-4">
+                            <i class="fas fa-check-circle alert-icon"></i>
+                            <div class="alert-content">
+                                <span th:text="${param.success[0]}">Registration successful</span>
+                            </div>
+                        </div>
+
+                        <!-- Logged Out Message -->
+                        <div th:if="${param.logout != null}" class="alert alert-info mb-4">
+                            <i class="fas fa-info-circle alert-icon"></i>
+                            <div class="alert-content">You have been logged out successfully.</div>
+                        </div>
+
+                        <form th:action="@{/login}" method="post">
+                            <div class="form-group">
+                                <label class="form-label" for="email">Email Address</label>
+                                <input type="email" id="email" name="email"
+                                       class="form-input" placeholder="you@example.com"
+                                       required autofocus>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <label class="form-label mb-0" for="password">Password</label>
+                                    <a th:href="@{/forgot-password}" style="font-size: var(--font-size-xs); color: var(--color-primary);">
+                                        Forgot password?
+                                    </a>
+                                </div>
+                                <input type="password" id="password" name="password"
+                                       class="form-input" placeholder="Enter your password"
+                                       required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-check">
+                                    <input type="checkbox" name="remember-me">
+                                    <span class="form-check-label">Remember me for 30 days</span>
+                                </label>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary-gradient btn-lg w-100">
+                                <i class="fas fa-sign-in-alt"></i>
+                                Sign In
+                            </button>
+                        </form>
+
+                        <div class="text-center mt-4">
+                            <p class="auth-subtitle" style="font-size: var(--font-size-sm);">
+                                Don't have an account?
+                                <a th:href="@{/register}" style="color: var(--color-primary); font-weight: var(--font-weight-semibold);">
+                                    Create one
+                                </a>
+                            </p>
+                        </div>
+
+                        <div class="text-center mt-3">
+                            <a th:href="@{/}" class="btn btn-ghost btn-sm">
+                                <i class="fas fa-arrow-left me-1"></i> Back to Home
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5 d-none d-lg-flex align-items-center justify-content-center">
+                    <div class="text-center fade-in">
+                        <div class="glass-card-lg p-5" style="max-width: 400px;">
+                            <i class="fas fa-briefcase" style="font-size: 3rem; color: var(--color-primary); opacity: 0.8;"></i>
+                            <h4 class="fw-bold mt-4">Your Career Awaits</h4>
+                            <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">
+                                Access your personalized dashboard, manage applications, and connect with top employers.
+                            </p>
+                            <div class="d-flex justify-content-center gap-4 mt-4">
+                                <div class="text-center">
+                                    <div style="font-size: 1.5rem; font-weight: var(--font-weight-extrabold); color: var(--color-primary);">10K+</div>
+                                    <div style="font-size: var(--font-size-xs); color: var(--text-muted);">Active Jobs</div>
+                                </div>
+                                <div class="text-center">
+                                    <div style="font-size: 1.5rem; font-weight: var(--font-weight-extrabold); color: var(--color-primary);">5K+</div>
+                                    <div style="font-size: var(--font-size-xs); color: var(--text-muted);">Companies</div>
+                                </div>
+                                <div class="text-center">
+                                    <div style="font-size: 1.5rem; font-weight: var(--font-weight-extrabold); color: var(--color-primary);">50K+</div>
+                                    <div style="font-size: var(--font-size-xs); color: var(--text-muted);">Placements</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/header::scripts}"></div>
+</body>
+</html>
+

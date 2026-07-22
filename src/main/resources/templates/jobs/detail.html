@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head th:replace="~{fragments/header::head(${job != null ? job.title() + ' at ' + job.company() + ' - JobPortal' : 'Job Details'}, 'View Job Details')}">
+</head>
+
+<body>
+
+<div class="aurora-bg"></div>
+<div class="aurora-blob aurora-blob-1"></div>
+<div class="aurora-blob aurora-blob-2"></div>
+<div class="mouse-glow"></div>
+
+<nav th:replace="~{fragments/header::navbar}"></nav>
+
+<div class="container py-4" style="margin-top:80px;" th:if="${job != null}">
+
+    <div class="glass-card-lg p-5 mb-4">
+
+        <div class="row align-items-center">
+
+            <div class="col-lg-8">
+
+                <div class="d-flex">
+
+                    <div class="job-company-logo me-4"
+                         style="width:80px;height:80px;font-size:2rem;">
+                        <i class="fas fa-building"></i>
+                    </div>
+
+                    <div>
+
+                        <h1 class="fw-bold mb-2"
+                            th:text="${job.title()}">
+                            Software Engineer
+                        </h1>
+
+                        <div class="d-flex flex-wrap gap-3 mb-3">
+
+                            <span>
+                                <i class="fas fa-building me-1"></i>
+                                <span th:text="${job.company()}">Company</span>
+                            </span>
+
+                            <span>
+                                <i class="fas fa-map-marker-alt me-1"></i>
+                                <span th:text="${job.location()}">Location</span>
+                            </span>
+
+                            <span>
+                                <i class="fas fa-briefcase me-1"></i>
+                                <span th:text="${job.employmentType()}">Full Time</span>
+                            </span>
+
+                            <span>
+                                <i class="fas fa-chart-line me-1"></i>
+                                <span th:text="${job.experienceLevel()}">Entry Level</span>
+                            </span>
+
+                        </div>
+
+                        <span
+                                class="badge bg-success"
+                                th:if="${job.salaryRange()!=null}">
+
+                            <i class="fas fa-dollar-sign me-1"></i>
+
+                            <span th:text="${job.salaryRange()}">
+                                Salary
+                            </span>
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-4">
+
+                <div class="d-grid gap-2">
+
+                    <form
+                            method="post"
+                            th:if="${isAuthenticated and currentUser?.role=='ROLE_JOBSEEKER' and !job.hasApplied()}"
+                            th:action="@{/student/jobs/apply}">
+
+                        <input
+                                type="hidden"
+                                name="jobId"
+                                th:value="${job.id()}"/>
+
+                        <button
+                                class="btn btn-primary btn-lg w-100"
+                                type="submit">
+
+                            <i class="fas fa-paper-plane"></i>
+
+                            Apply Now
+
+                        </button>
+
+                    </form>
+
+                    <button
+                            class="btn btn-success btn-lg"
+                            disabled
+                            th:if="${isAuthenticated and currentUser?.role=='ROLE_JOBSEEKER' and job.hasApplied()}">
+
+                        <i class="fas fa-check-circle"></i>
+
+                        Applied
+
+                    </button>
+
+                    <a
+                            class="btn btn-primary btn-lg"
+                            th:if="${!isAuthenticated}"
+                            th:href="@{/login}">
+
+                        Login To Apply
+
+                    </a>
+                                        <div
+                            class="d-flex gap-2"
+                            th:if="${isAuthenticated and currentUser?.role=='ROLE_JOBSEEKER'}">
+
+                        <form
+                                method="post"
+                                th:if="${!job.hasSaved()}"
+                                th:action="@{'/student/jobs/save/' + ${job.id()}}">
+
+                            <button
+                                    type="submit"
+                                    class="btn btn-outline-secondary flex-fill">
+
+                                <i class="far fa-bookmark"></i>
+                                Save
+
+                            </button>
+
+                        </form>
+
+                        <form
+                                method="post"
+                                th:if="${job.hasSaved()}"
+                                th:action="@{'/student/jobs/unsave/' + ${job.id()}}">
+
+                            <button
+                                    type="submit"
+                                    class="btn btn-outline-secondary flex-fill">
+
+                                <i class="fas fa-bookmark"></i>
+                                Saved
+
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="row g-4">
+
+        <div class="col-lg-8">
+
+            <div class="card shadow-sm mb-4">
+
+                <div class="card-header">
+
+                    <h5 class="mb-0">
+                        <i class="fas fa-align-left me-2"></i>
+                        Job Description
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <p
+                            class="mb-0"
+                            style="white-space:pre-line;"
+                            th:text="${job.description()}">
+
+                        Description
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div
+                    class="card shadow-sm"
+                    th:if="${job.skills()!=null and !job.skills().isEmpty()}">
+
+                <div class="card-header">
+
+                    <h5 class="mb-0">
+
+                        <i class="fas fa-code me-2"></i>
+
+                        Skills Required
+
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <p
+                            class="mb-0"
+                            th:text="${job.skills()}">
+
+                        Java, Spring Boot
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-4">
+
+            <div class="card shadow-sm mb-4">
+
+                <div class="card-header">
+
+                    <h5 class="mb-0">
+
+                        <i class="fas fa-info-circle me-2"></i>
+
+                        Job Summary
+
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <div class="mb-3">
+
+                        <small class="text-muted">
+                            Posted On
+                        </small>
+
+                        <div
+                                th:text="${#temporals.format(job.createdAt(),'MMMM dd, yyyy')}">
+
+                            Date
+
+                        </div>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <small class="text-muted">
+                            Deadline
+                        </small>
+
+                        <div
+                                th:text="${#temporals.format(job.deadline(),'MMMM dd, yyyy')}">
+
+                            Deadline
+
+                        </div>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <small class="text-muted">
+                            Experience
+                        </small>
+
+                        <div
+                                th:text="${job.experienceLevel()}">
+
+                            Entry Level
+
+                        </div>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <small class="text-muted">
+                            Employment Type
+                        </small>
+
+                        <div
+                                th:text="${job.employmentType()}">
+
+                            Full Time
+
+                        </div>
+
+                    </div>
+
+                    <div>
+
+                        <small class="text-muted">
+                            Applications
+                        </small>
+
+                        <div
+                                th:text="${job.applicationCount() + ' applicants'}">
+
+                            0 applicants
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+                        <div class="card shadow-sm">
+
+                <div class="card-header">
+
+                    <h5 class="mb-0">
+                        <i class="fas fa-phone me-2"></i>
+                        Contact
+                    </h5>
+
+                </div>
+
+                <div class="card-body text-center">
+
+                    <div class="job-company-logo mx-auto mb-3"
+                         style="width:60px;height:60px;font-size:1.5rem;">
+                        <i class="fas fa-building"></i>
+                    </div>
+
+                    <h5
+                        class="fw-bold"
+                        th:text="${job.company()}">
+                        Company
+                    </h5>
+
+                    <p
+                        class="text-muted mb-1"
+                        th:text="${job.location()}">
+                        Location
+                    </p>
+
+                    <p
+                        class="text-muted"
+                        th:text="${job.employerName()}">
+                        Employer
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Job Not Found -->
+
+<div
+        class="container py-5 text-center"
+        style="margin-top:80px;"
+        th:if="${job == null}">
+
+    <div class="glass-card-lg p-5">
+
+        <i class="fas fa-briefcase fa-4x mb-4 text-secondary"></i>
+
+        <h2 class="mb-3">
+
+            Job Not Found
+
+        </h2>
+
+        <p class="text-muted mb-4">
+
+            This job may have been removed or is no longer available.
+
+        </p>
+
+        <a
+                th:href="@{/jobs}"
+                class="btn btn-primary btn-lg">
+
+            Browse Jobs
+
+        </a>
+
+    </div>
+
+</div>
+
+<footer th:replace="~{fragments/footer::footer}"></footer>
+
+<div th:replace="~{fragments/header::scripts}"></div>
+
+</body>
+
+</html>

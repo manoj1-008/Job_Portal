@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/header::head('Manage Users - JobPortal', 'Admin user management')}"></head>
+<body>
+    <div th:replace="~{fragments/admin-sidebar::sidebar('Manage Users', 'users')}"></div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form th:action="@{/admin/users}" method="get" class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label">Role</label>
+                    <select name="role" class="form-input">
+                        <option value="">All Roles</option>
+                        <option value="ADMIN" th:selected="${#strings.equals(param.role, 'ADMIN')}">Admins</option>
+                        <option value="EMPLOYER" th:selected="${#strings.equals(param.role, 'EMPLOYER')}">Employers</option>
+                        <option value="JOB_SEEKER" th:selected="${#strings.equals(param.role, 'JOB_SEEKER')}">Job Seekers</option>
+                    </select>
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label">Search</label>
+                    <input type="text" name="keyword" class="form-input" placeholder="Search by name, email, or phone..." th:value="${keyword}">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary-gradient w-100"><i class="fas fa-search"></i> Search</button>
+                </div>
+                <div class="col-md-2">
+                    <a th:href="@{/admin/users}" class="btn btn-secondary-glass w-100"><i class="fas fa-times"></i> Clear</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="row g-3 mb-4">
+        <div class="col-4 col-lg-2"><div class="glass p-3 text-center" style="border-radius: var(--radius-lg);"><div class="fw-bold" th:text="${totalUsers ?: 0}">0</div><div style="font-size: var(--font-size-xs); color: var(--text-muted);">Total</div></div></div>
+        <div class="col-4 col-lg-2"><div class="glass p-3 text-center" style="border-radius: var(--radius-lg);"><div class="fw-bold" th:text="${totalAdmins ?: 0}">0</div><div style="font-size: var(--font-size-xs); color: var(--text-muted);">Admins</div></div></div>
+        <div class="col-4 col-lg-2"><div class="glass p-3 text-center" style="border-radius: var(--radius-lg);"><div class="fw-bold" th:text="${totalEmployers ?: 0}">0</div><div style="font-size: var(--font-size-xs); color: var(--text-muted);">Employers</div></div></div>
+        <div class="col-4 col-lg-2"><div class="glass p-3 text-center" style="border-radius: var(--radius-lg);"><div class="fw-bold" th:text="${totalJobSeekers ?: 0}">0</div><div style="font-size: var(--font-size-xs); color: var(--text-muted);">Seekers</div></div></div>
+        <div class="col-4 col-lg-2"><div class="glass p-3 text-center" style="border-radius: var(--radius-lg);"><div class="fw-bold" th:text="${activeUsers ?: 0}">0</div><div style="font-size: var(--font-size-xs); color: var(--text-muted);">Active</div></div></div>
+        <div class="col-4 col-lg-2"><div class="glass p-3 text-center" style="border-radius: var(--radius-lg);"><div class="fw-bold" th:text="${disabledUsers ?: 0}">0</div><div style="font-size: var(--font-size-xs); color: var(--text-muted);">Disabled</div></div></div>
+    </div>
+
+    <!-- Users Table -->
+    <div class="card">
+        <div class="card-body p-0">
+            <div th:if="${users != null and !users.isEmpty()}">
+                <div class="table-responsive">
+                    <table class="table-glass">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Role</th>
+                                <th>Joined</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="u : ${users}">
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="profile-avatar" style="width: 36px; height: 36px; font-size: 0.85rem;">
+                                            <span th:text="${#strings.substring(u.fullName, 0, 1)}">U</span>
+                                        </div>
+                                        <div class="fw-semibold" style="color: var(--text-primary); font-size: var(--font-size-sm);" th:text="${u.fullName}">Name</div>
+                                    </div>
+                                </td>
+                                <td style="font-size: var(--font-size-sm);" th:text="${u.email}">Email</td>
+                                <td style="font-size: var(--font-size-sm);" th:text="${u.phone ?: '-'}">Phone</td>
+                                <td>
+                                    <span class="badge" th:classappend="${u.role.name == 'ADMIN'} ? 'badge-primary' : ${u.role.name == 'EMPLOYER'} ? 'badge-warning' : 'badge-info'"
+                                          th:text="${u.role.name}">Role</span>
+                                </td>
+                                <td style="font-size: var(--font-size-sm);" th:text="${#temporals.format(u.createdAt, 'MMM dd, yyyy')}">Date</td>
+                                <td><span class="status-badge" th:class="${u.enabled} ? 'enabled' : 'disabled'" th:text="${u.enabled} ? 'Enabled' : 'Disabled'">Active</span></td>
+                                <td>
+                                    <div class="d-flex gap-1">
+                                        <a th:href="@{'/admin/users/' + ${u.id} + '/toggle-status'}" class="btn btn-ghost btn-icon btn-sm" th:title="${u.enabled} ? 'Disable' : 'Enable'">
+                                            <i th:class="${u.enabled} ? 'fas fa-pause' : 'fas fa-play'" th:style="${u.enabled} ? 'color: var(--color-warning);' : 'color: var(--color-success);'"></i>
+                                        </a>
+                                        <button class="btn btn-ghost btn-icon btn-sm" title="Delete" data-bs-toggle="modal"
+                                                data-bs-target="#deleteUserModal"
+                                                th:attr="data-user-id=${u.id}, data-user-name=${u.fullName}, data-user-email=${u.email}">
+                                            <i class="fas fa-trash" style="color: var(--color-danger);"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div th:if="${users == null or users.isEmpty()}" class="empty-state">
+                <div class="empty-icon"><i class="fas fa-users"></i></div>
+                <h4>No users found</h4>
+                <p>Try adjusting your search filters.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <div th:if="${totalPages > 1}" class="pagination mt-4 justify-content-center">
+        <div th:each="i : ${#numbers.sequence(0, totalPages - 1)}" class="page-item" th:classappend="${i == currentPage} ? 'active' : ''">
+            <a class="page-link" th:href="@{/admin/users(page=${i}, role=${param.role}, keyword=${param.keyword})}" th:text="${i + 1}">1</a>
+        </div>
+    </div>
+
+    <!-- Delete Modal -->
+    <div class="modal modal-glass fade" id="deleteUserModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" style="color: var(--color-danger);">Delete User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p style="color: var(--text-secondary);">Are you sure you want to delete <strong id="deleteUserName">this user</strong>?</p>
+                    <p style="color: var(--text-muted); font-size: var(--font-size-sm);" id="deleteUserEmail">user@example.com</p>
+                    <p style="color: var(--color-danger); font-size: var(--font-size-sm);">This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary-glass" data-bs-dismiss="modal">Cancel</button>
+                    <a th:href="@{/admin/users/}" id="deleteUserConfirm" class="btn btn-danger"><i class="fas fa-trash"></i> Delete User</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </main></div>
+    <div th:replace="~{fragments/header::scripts}"></div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const m = document.getElementById('deleteUserModal');
+        if (m) {
+            m.addEventListener('show.bs.modal', function(e) {
+                const b = e.relatedTarget;
+                document.getElementById('deleteUserName').textContent = b.getAttribute('data-user-name') || 'this user';
+                document.getElementById('deleteUserEmail').textContent = b.getAttribute('data-user-email') || '';
+                document.getElementById('deleteUserConfirm').href = '/admin/users/' + b.getAttribute('data-user-id') + '/delete';
+            });
+        }
+    });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/header::head('Edit Job - JobPortal', 'Update your job posting')}"></head>
+<body>
+    <div th:replace="~{fragments/employer-sidebar::sidebar('Edit Job', 'jobs')}"></div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="fw-bold mb-0"><i class="fas fa-edit me-2" style="color: var(--color-info);"></i> Edit Job Posting</h5>
+                    <p style="color: var(--text-secondary); font-size: var(--font-size-sm); margin-top: 0.25rem;">Update the details of your job posting.</p>
+                </div>
+                <div class="card-body">
+                    <form th:action="@{'/employer/jobs/' + ${jobId} + '/edit'}" th:object="${updateJobRequest}" method="post">
+
+                        <h6 class="fw-bold mb-3" style="color: var(--color-primary);"><i class="fas fa-info-circle me-2"></i>Basic Details</h6>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    <label class="form-label">Job Title <span style="color: var(--color-danger);">*</span></label>
+                                    <input type="text" name="title" class="form-input" th:value="*{title}" placeholder="e.g. Senior Software Engineer" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="form-label">Company <span style="color: var(--color-danger);">*</span></label>
+                                    <input type="text" name="company" class="form-input" th:value="*{company}" placeholder="Your company name" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h6 class="fw-bold mb-3" style="color: var(--color-info);"><i class="fas fa-align-left me-2"></i>Job Description</h6>
+                        <div class="row g-3 mb-4">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label class="form-label">Description <span style="color: var(--color-danger);">*</span></label>
+                                    <textarea name="description" class="form-input" rows="6" required th:text="*{description}"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h6 class="fw-bold mb-3" style="color: var(--color-success);"><i class="fas fa-map-marker-alt me-2"></i>Location & Type</h6>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="form-label">Location <span style="color: var(--color-danger);">*</span></label>
+                                    <input type="text" name="location" class="form-input" th:value="*{location}" placeholder="e.g. New York, NY" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="form-label">Employment Type</label>
+                                    <select name="employmentType" class="form-input">
+                                        <option value="Full-time" th:selected="*{employmentType == 'Full-time'}">Full-time</option>
+                                        <option value="Part-time" th:selected="*{employmentType == 'Part-time'}">Part-time</option>
+                                        <option value="Contract" th:selected="*{employmentType == 'Contract'}">Contract</option>
+                                        <option value="Internship" th:selected="*{employmentType == 'Internship'}">Internship</option>
+                                        <option value="Freelance" th:selected="*{employmentType == 'Freelance'}">Freelance</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="form-label">Experience Level</label>
+                                    <select name="experienceLevel" class="form-input">
+                                        <option value="Entry Level" th:selected="*{experienceLevel == 'Entry Level'}">Entry Level</option>
+                                        <option value="Mid Level" th:selected="*{experienceLevel == 'Mid Level'}">Mid Level</option>
+                                        <option value="Senior" th:selected="*{experienceLevel == 'Senior'}">Senior</option>
+                                        <option value="Lead" th:selected="*{experienceLevel == 'Lead'}">Lead</option>
+                                        <option value="Manager" th:selected="*{experienceLevel == 'Manager'}">Manager</option>
+                                        <option value="Director" th:selected="*{experienceLevel == 'Director'}">Director</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h6 class="fw-bold mb-3" style="color: var(--color-warning);"><i class="fas fa-dollar-sign me-2"></i>Salary Range</h6>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Minimum Salary</label>
+                                    <input type="number" name="salaryMin" class="form-input" th:value="*{salaryMin}" step="0.01">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Maximum Salary</label>
+                                    <input type="number" name="salaryMax" class="form-input" th:value="*{salaryMax}" step="0.01">
+                                </div>
+                            </div>
+                        </div>
+
+                        <h6 class="fw-bold mb-3" style="color: var(--color-pink);"><i class="fas fa-code me-2"></i>Skills & Deadline</h6>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    <label class="form-label">Skills Required</label>
+                                    <input type="text" name="skills" class="form-input" th:value="*{skills}" placeholder="Comma separated skills">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="form-label">Application Deadline <span style="color: var(--color-danger);">*</span></label>
+                                    <input type="date" name="deadline" class="form-input" th:value="*{deadline}" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Active Status -->
+                        <h6 class="fw-bold mb-3"><i class="fas fa-toggle-on me-2" style="color: var(--color-success);"></i>Job Status</h6>
+                        <div class="d-flex align-items-center gap-3 mb-4">
+                            <label class="toggle-switch">
+                                <input type="checkbox" name="active" th:checked="*{active}">
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <span style="font-size: var(--font-size-sm); color: var(--text-secondary);">
+                                Active (visible to job seekers)
+                            </span>
+                        </div>
+
+                        <div class="d-flex gap-3 mt-4 pt-4" style="border-top: 1px solid var(--border-primary);">
+                            <button type="submit" class="btn btn-primary-gradient btn-lg">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                            <a th:href="@{/employer/jobs}" class="btn btn-secondary-glass btn-lg">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </main></div>
+    <div th:replace="~{fragments/header::scripts}"></div>
+</body>
+</html>
+

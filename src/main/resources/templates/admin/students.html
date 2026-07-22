@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/header::head('Manage Students - JobPortal', 'Student management')}"></head>
+<body>
+    <div th:replace="~{fragments/admin-sidebar::sidebar('Manage Students', 'students')}"></div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <form th:action="@{/admin/students}" method="get" class="row g-3 align-items-end">
+                <div class="col-md-6"><label class="form-label">Search</label><input type="text" name="keyword" class="form-input" placeholder="Search by name or email..." th:value="${keyword}"></div>
+                <div class="col-md-3"><label class="form-label">Has Resume</label><select name="hasResume" class="form-input"><option value="">All</option><option value="true" th:selected="${#strings.equals(param.hasResume, 'true')}">With Resume</option><option value="false" th:selected="${#strings.equals(param.hasResume, 'false')}">Without Resume</option></select></div>
+                <div class="col-md-3"><button type="submit" class="btn btn-primary-gradient w-100"><i class="fas fa-search"></i> Search</button></div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-4"><div class="glass p-3 text-center" style="border-radius: var(--radius-lg);"><div class="fw-bold" th:text="${totalStudents ?: 0}">0</div><div style="font-size: var(--font-size-xs); color: var(--text-muted);">Total Students</div></div></div>
+        <div class="col-4"><div class="glass p-3 text-center" style="border-radius: var(--radius-lg);"><div class="fw-bold" th:text="${studentsWithResume ?: 0}">0</div><div style="font-size: var(--font-size-xs); color: var(--text-muted);">With Resume</div></div></div>
+        <div class="col-4"><div class="glass p-3 text-center" style="border-radius: var(--radius-lg);"><div class="fw-bold" th:text="${studentsApplied ?: 0}">0</div><div style="font-size: var(--font-size-xs); color: var(--text-muted);">Applied to Jobs</div></div></div>
+    </div>
+
+    <div class="card">
+        <div class="card-body p-0">
+            <div th:if="${students != null and !students.isEmpty()}">
+                <div class="table-responsive">
+                    <table class="table-glass">
+                        <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Joined</th><th>Resume</th><th>Applications</th><th>Status</th><th>Actions</th></tr></thead>
+                        <tbody>
+                            <tr th:each="s : ${students}">
+                                <td><div class="d-flex align-items-center gap-2"><div class="profile-avatar" style="width: 36px; height: 36px; font-size: 0.85rem;"><span th:text="${#strings.substring(s.fullName, 0, 1)}">U</span></div><div class="fw-semibold" style="font-size: var(--font-size-sm);" th:text="${s.fullName}">Name</div></div></td>
+                                <td style="font-size: var(--font-size-sm);" th:text="${s.email}">Email</td>
+                                <td style="font-size: var(--font-size-sm);" th:text="${s.phone ?: '-'}">Phone</td>
+                                <td style="font-size: var(--font-size-sm);" th:text="${#temporals.format(s.createdAt, 'MMM dd, yyyy')}">Date</td>
+                                <td><span class="badge" th:classappend="${s.hasResume} ? 'badge-success' : 'badge-danger'" th:text="${s.hasResume} ? 'Yes' : 'No'">No</span></td>
+                                <td><span class="fw-semibold" th:text="${s.applicationCount ?: 0}">0</span></td>
+                                <td><span class="status-badge" th:class="${s.enabled} ? 'enabled' : 'disabled'" th:text="${s.enabled} ? 'Enabled' : 'Disabled'">Status</span></td>
+                                <td><div class="d-flex gap-1">
+                                    <a th:href="@{'/admin/users/' + ${s.id} + '/toggle-status'}" class="btn btn-ghost btn-icon btn-sm"><i th:class="${s.enabled} ? 'fas fa-pause' : 'fas fa-play'" th:style="${s.enabled} ? 'color: var(--color-warning);' : 'color: var(--color-success);'"></i></a>
+                                    <button class="btn btn-ghost btn-icon btn-sm" data-bs-toggle="modal" data-bs-target="#deleteStudentModal" th:attr="data-user-id=${s.id}, data-user-name=${s.fullName}"><i class="fas fa-trash" style="color: var(--color-danger);"></i></button>
+                                </div></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div th:if="${students == null or students.isEmpty()}" class="empty-state">
+                <div class="empty-icon"><i class="fas fa-user-graduate"></i></div>
+                <h4>No students found</h4>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${totalPages > 1}" class="pagination mt-4 justify-content-center">
+        <div th:each="i : ${#numbers.sequence(0, totalPages - 1)}" class="page-item" th:classappend="${i == currentPage} ? 'active' : ''">
+            <a class="page-link" th:href="@{/admin/students(page=${i}, keyword=${param.keyword}, hasResume=${param.hasResume})}" th:text="${i + 1}">1</a>
+        </div>
+    </div>
+
+    <div class="modal modal-glass fade" id="deleteStudentModal" tabindex="-1">
+        <div class="modal-dialog"><div class="modal-content">
+            <div class="modal-header"><h5 class="modal-title fw-bold" style="color: var(--color-danger);">Delete Student</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body"><p style="color: var(--text-secondary);">Delete <strong id="deleteStudentName">this student</strong>? This cannot be undone.</p></div>
+            <div class="modal-footer"><button type="button" class="btn btn-secondary-glass" data-bs-dismiss="modal">Cancel</button><a th:href="@{/admin/users/}" id="deleteStudentConfirm" class="btn btn-danger"><i class="fas fa-trash"></i> Delete</a></div>
+        </div></div>
+    </div>
+
+    </main></div>
+    <div th:replace="~{fragments/header::scripts}"></div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const m = document.getElementById('deleteStudentModal');
+        if (m) {
+            m.addEventListener('show.bs.modal', function(e) {
+                const b = e.relatedTarget;
+                document.getElementById('deleteStudentName').textContent = b.getAttribute('data-user-name') || 'this student';
+                document.getElementById('deleteStudentConfirm').href = '/admin/users/' + b.getAttribute('data-user-id') + '/delete';
+            });
+        }
+    });
+    </script>
+</body>
+</html>
+

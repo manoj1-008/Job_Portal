@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/header::head('Error - JobPortal', 'An error occurred')}"></head>
+<body>
+    <div class="aurora-bg"></div>
+    <div class="aurora-blob aurora-blob-1"></div>
+    <div class="aurora-blob aurora-blob-2"></div>
+    <div class="mouse-glow"></div>
+
+    <!-- Navbar -->
+    <nav th:replace="~{fragments/header::navbar}"></nav>
+
+    <div class="auth-container" style="min-height: 80vh;">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-6 text-center">
+                    <div class="glass-card-lg p-5 fade-in">
+                        <div style="font-size: 5rem; color: var(--color-danger); opacity: 0.6; margin-bottom: 1.5rem;">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <h1 class="display-4 fw-bold mb-3" style="letter-spacing: -2px;" th:text="${status} ?: '500'">500</h1>
+                        <h3 class="fw-bold mb-3" th:text="${title} ?: 'Internal Server Error'">Error</h3>
+                        <p style="color: var(--text-secondary); font-size: var(--font-size-base); max-width: 500px; margin: 0 auto 2rem;"
+                           th:text="${message} ?: 'An unexpected error occurred. Please try again later.'">
+                            Error message
+                        </p>
+                        <div class="d-flex justify-content-center gap-3">
+                            <a th:href="@{/}" class="btn btn-primary-gradient">
+                                <i class="fas fa-home"></i> Go Home
+                            </a>
+                            <button onclick="history.back()" class="btn btn-secondary-glass">
+                                <i class="fas fa-arrow-left"></i> Go Back
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/footer::footer}"></footer>
+    <div th:replace="~{fragments/header::scripts}"></div>
+</body>
+</html>
+

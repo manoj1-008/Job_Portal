@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/header::head('Admin Dashboard', 'Platform administration')}"></head>
+<body>
+<div th:replace="~{fragments/admin-sidebar::sidebar('Dashboard', 'dashboard')}"></div>
+<div class="dashboard-main">
+<div class="container-fluid">
+<div class="glass-card-lg p-5 mb-5 fade-in">
+<div class="row align-items-center">
+<div class="col-lg-8">
+<h2 class="fw-bold mb-0">Welcome, <span th:text="${currentUser?.fullName ?: 'Admin'}">Admin</span></h2>
+<p style="color: var(--text-secondary);">Platform monitoring and management.</p>
+</div>
+<div class="col-lg-4 text-end">
+<a th:href="@{/admin/users}" class="btn btn-primary-gradient"><i class="fas fa-users"></i> Users</a>
+<a th:href="@{/admin/jobs}" class="btn btn-secondary-glass ms-2"><i class="fas fa-briefcase"></i> Jobs</a>
+</div>
+</div>
+<div class="row g-4">
+<div class="col-md-2"><div class="card p-3 text-center"><h3 th:text="${stats?.totalUsers ?: 0}">0</h3><p class="mb-0 text-muted small">Users</p></div>
+<div class="col-md-2"><div class="card p-3 text-center"><h3 th:text="${stats?.totalStudents ?: 0}">0</h3><p class="mb-0 text-muted small">Students</p></div>
+<div class="col-md-2"><div class="card p-3 text-center"><h3 th:text="${stats?.totalEmployers ?: 0}">0</h3><p class="mb-0 text-muted small">Employers</p></div>
+<div class="col-md-2"><div class="card p-3 text-center"><h3 th:text="${stats?.totalJobs ?: 0}">0</h3><p class="mb-0 text-muted small">Jobs</p></div>
+<div class="col-md-2"><div class="card p-3 text-center"><h3 th:text="${stats?.totalApplications ?: 0}">0</h3><p class="mb-0 text-muted small">Applications</p></div>
+<div class="col-md-2"><div class="card p-3 text-center"><h3 th:text="${stats?.hiredCount ?: 0}">0</h3><p class="mb-0 text-muted small">Hired</p></div>
+</div>
+</div>
+<div th:replace="~{fragments/header::scripts}"></div>
+</body>
+</html>

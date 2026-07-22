@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="en">
+<head th:replace="~{fragments/header::head('Register - JobPortal', 'Create your account')}"></head>
+<body>
+    <div class="aurora-bg"></div>
+    <div class="aurora-blob aurora-blob-1"></div>
+    <div class="aurora-blob aurora-blob-2"></div>
+    <div class="mouse-glow"></div>
+
+    <div class="auth-container">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="text-center mb-5 fade-in">
+                        <a th:href="@{/}" class="d-inline-block mb-3" style="font-size: 2.5rem;">
+                            <i class="fas fa-briefcase" style="color: var(--color-primary);"></i>
+                        </a>
+                        <h2 class="auth-title" style="font-size: 2.5rem;">Join JobPortal</h2>
+                        <p class="auth-subtitle" style="max-width: 500px; margin: 0 auto;">
+                            Choose your account type to get started. Whether you're seeking opportunities or hiring talent, we've got you covered.
+                        </p>
+                    </div>
+
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <a th:href="@{/student/register}" class="text-decoration-none">
+                                <div class="glass-card-lg p-5 text-center card-lift" style="height: 100%;">
+                                    <div class="feature-icon" style="width: 80px; height: 80px; border-radius: var(--radius-2xl); background: rgba(139, 92, 246, 0.12); color: var(--color-primary); font-size: 2rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
+                                        <i class="fas fa-user-graduate"></i>
+                                    </div>
+                                    <h4 class="fw-bold mb-3">Job Seeker</h4>
+                                    <p style="color: var(--text-secondary); font-size: var(--font-size-sm); line-height: 1.7;">
+                                        Find your dream job, track applications, upload your resume, and get discovered by top employers.
+                                    </p>
+                                    <ul class="list-unstyled mt-4 text-start" style="font-size: var(--font-size-sm); color: var(--text-secondary);">
+                                        <li class="mb-2"><i class="fas fa-check-circle me-2" style="color: var(--color-success);"></i> Browse thousands of jobs</li>
+                                        <li class="mb-2"><i class="fas fa-check-circle me-2" style="color: var(--color-success);"></i> Apply with one click</li>
+                                        <li class="mb-2"><i class="fas fa-check-circle me-2" style="color: var(--color-success);"></i> Track application status</li>
+                                        <li class="mb-2"><i class="fas fa-check-circle me-2" style="color: var(--color-success);"></i> Get AI-powered recommendations</li>
+                                    </ul>
+                                    <span class="btn btn-primary-gradient w-100 mt-3">
+                                        <i class="fas fa-user-plus"></i> Register as Seeker
+                                    </span>
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="col-md-6">
+                            <a th:href="@{/employer/register}" class="text-decoration-none">
+                                <div class="glass-card-lg p-5 text-center card-lift" style="height: 100%;">
+                                    <div class="feature-icon" style="width: 80px; height: 80px; border-radius: var(--radius-2xl); background: rgba(59, 130, 246, 0.12); color: var(--color-secondary); font-size: 2rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
+                                        <i class="fas fa-building"></i>
+                                    </div>
+                                    <h4 class="fw-bold mb-3">Employer</h4>
+                                    <p style="color: var(--text-secondary); font-size: var(--font-size-sm); line-height: 1.7;">
+                                        Post job openings, review applications, find top talent, and build your dream team with ease.
+                                    </p>
+                                    <ul class="list-unstyled mt-4 text-start" style="font-size: var(--font-size-sm); color: var(--text-secondary);">
+                                        <li class="mb-2"><i class="fas fa-check-circle me-2" style="color: var(--color-success);"></i> Post unlimited jobs</li>
+                                        <li class="mb-2"><i class="fas fa-check-circle me-2" style="color: var(--color-success);"></i> Review applicants</li>
+                                        <li class="mb-2"><i class="fas fa-check-circle me-2" style="color: var(--color-success);"></i> Shortlist candidates</li>
+                                        <li class="mb-2"><i class="fas fa-check-circle me-2" style="color: var(--color-success);"></i> Company branding</li>
+                                    </ul>
+                                    <span class="btn btn-primary-gradient w-100 mt-3">
+                                        <i class="fas fa-building"></i> Register as Employer
+                                    </span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">
+                            Already have an account?
+                            <a th:href="@{/login}" style="color: var(--color-primary); font-weight: var(--font-weight-semibold);">
+                                Sign in
+                            </a>
+                        </p>
+                        <a th:href="@{/}" class="btn btn-ghost btn-sm">
+                            <i class="fas fa-arrow-left me-1"></i> Back to Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/header::scripts}"></div>
+</body>
+</html>
+

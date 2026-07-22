@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="en">
+<head th:replace="~{fragments/header::head('Search Results - JobPortal', 'Job search results')}"></head>
+<body>
+<div class="aurora-bg"></div>
+<div class="aurora-blob aurora-blob-1"></div>
+<div class="aurora-blob aurora-blob-2"></div>
+<div class="mouse-glow"></div>
+<nav th:replace="~{fragments/header::navbar}"></nav>
+<div class="container py-4" style="margin-top: 76px;">
+<div class="glass-card-lg p-4 mb-4 fade-in">
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+<div>
+<h4 class="fw-bold mb-1"><span th:text="${totalJobs ?: 0}">0</span> results <span th:if="${keyword != null and !keyword.isEmpty()}">for "<span th:text="${keyword}">keyword</span>"</span></h4>
+<p style="color: var(--text-secondary); font-size: var(--font-size-sm); margin: 0;">
+<span th:if="${location != null and !location.isEmpty()}">in <span th:text="${location}">location</span> &middot; </span>
+<span th:if="${employmentType != null and !employmentType.isEmpty()}" th:text="${employmentType}">Type</span>
+<span th:if="${experienceLevel != null and !experienceLevel.isEmpty()}"> &middot; <span th:text="${experienceLevel}">Level</span>
+</p>
+</div>
+<form th:action="@{/jobs/search}" method="get" class="d-flex gap-2">
+<input type="text" name="keyword" class="form-input" style="width: 250px;" placeholder="Refine search..." th:value="${keyword}"/>
+<input type="hidden" name="location" th:value="${location}"/>
+<button type="submit" class="btn btn-primary-gradient"><i class="fas fa-search"></i></button>
+</form>
+</div>
+<div class="d-flex flex-wrap gap-2 mt-3">
+<a th:href="@{/jobs}" class="btn btn-ghost btn-sm" style="font-size: var(--font-size-xs);"><i class="fas fa-times me-1"></i> Clear all filters</a>
+<span th:if="${keyword != null and !keyword.isEmpty()}" class="badge badge-primary" style="font-size: var(--font-size-sm); padding: 6px 14px;">"<span th:text="${keyword}">keyword</span>" <a th:href="@{/jobs/search(location=${location})}" class="ms-2" style="color: inherit;"><i class="fas fa-times"></i></a></span>
+<span th:if="${location != null and !location.isEmpty()}" class="badge badge-info" style="font-size: var(--font-size-sm); padding: 6px 14px;"><span th:text="${location}">location</span> <a th:href="@{/jobs/search(keyword=${keyword})}" class="ms-2" style="color: inherit;"><i class="fas fa-times"></i></a></span>
+<span th:if="${employmentType != null and !employmentType.isEmpty()}" class="badge badge-success" style="font-size: var(--font-size-sm); padding: 6px 14px;" th:text="${employmentType}">Type</span>
+</div>
+<div class="row g-4">
+<div class="col-lg-8">
+<div th:if="${jobs != null and !jobs.isEmpty()}">
+<div class="d-flex flex-column gap-3">
+<div th:each="job : ${jobs}">
+<div class="job-card card card-lift">
+<div class="d-flex align-items-start gap-3">
+<div class="job-company-logo"><i class="fas fa-building"></i></div>
+<div class="flex-grow-1" style="min-width: 0;">
+<div class="d-flex justify-content-between align-items-start">
+<div>
+<a th:href="@{'/jobs/view/' + ${job.id()}}" class="text-decoration-none"><h5 class="job-title" th:text="${job.title()}">Title</h5></a>
+<div class="job-company"><i class="fas fa-building me-1"></i> <span th:text="${job.company()}">Company</span></div>
+</div>
+<div class="job-tags">
+<span class="badge badge-primary"><i class="fas fa-map-marker-alt me-1"></i> <span th:text="${job.location()}">Location</span>
+<span class="badge badge-success" th:if="${job.salaryRange() != null}"><i class="fas fa-dollar-sign me-1"></i> <span th:text="${job.salaryRange()}">Salary</span>
+<span class="badge badge-info" th:if="${job.employmentType() != null}" th:text="${job.employmentType()}">Type</span>
+</div>
+<p class="mt-2" style="color: var(--text-secondary); font-size: var(--font-size-sm);" th:text="${#strings.abbreviate(job.description(), 150)}">Description</p>
+<div class="job-meta">
+<span class="job-date"><i class="far fa-clock me-1"></i> <span th:text="${#temporals.format(job.createdAt(), 'MMM dd, yyyy')}">Date</span>
+</div>
+</div>
+</div>
+</div>
+<div th:if="${jobs == null or jobs.isEmpty()}" class="empty-state">
+<div class="empty-icon"><i class="fas fa-search"></i></div>
+<h4>No results found</h4>
+<p>Try different keywords or remove filters.</p>
+<a th:href="@{/jobs}" class="btn btn-primary-gradient">Browse All Jobs</a>
+</div>
+<div th:if="${totalPages > 1}" class="d-flex justify-content-center mt-4">
+<nav><ul class="pagination">
+<li th:each="i : ${#numbers.sequence(0, totalPages - 1)}" class="page-item" th:classappend="${i == currentPage} ? 'active' : ''">
+<a class="page-link" th:href="@{/jobs/search(page=${i}, keyword=${keyword}, location=${location})}" th:text="${i + 1}">1</a>
+</li>
+</ul></nav>
+</div>
+<div class="col-lg-4">
+<div class="card mb-4">
+<div class="card-header"><h5 class="fw-bold mb-0"><i class="fas fa-lightbulb me-2" style="color: var(--color-warning);"></i> Suggested Searches</h5></div>
+<div class="card-body">
+<div class="d-flex flex-column gap-2">
+<a th:href="@{/jobs/search(keyword='Java Developer')}" class="btn btn-ghost btn-sm text-start"><i class="fas fa-arrow-right me-2" style="font-size: 0.7rem;"></i> Java Developer</a>
+<a th:href="@{/jobs/search(keyword='React Developer')}" class="btn btn-ghost btn-sm text-start"><i class="fas fa-arrow-right me-2" style="font-size: 0.7rem;"></i> React Developer</a>
+<a th:href="@{/jobs/search(keyword='Data Analyst')}" class="btn btn-ghost btn-sm text-start"><i class="fas fa-arrow-right me-2" style="font-size: 0.7rem;"></i> Data Analyst</a>
+<a th:href="@{/jobs/search(keyword='Product Manager')}" class="btn btn-ghost btn-sm text-start"><i class="fas fa-arrow-right me-2" style="font-size: 0.7rem;"></i> Product Manager</a>
+<a th:href="@{/jobs/search(keyword='DevOps Engineer')}" class="btn btn-ghost btn-sm text-start"><i class="fas fa-arrow-right me-2" style="font-size: 0.7rem;"></i> DevOps Engineer</a>
+</div>
+</div>
+</div>
+<footer th:replace="~{fragments/footer::footer}"></footer>
+<div th:replace="~{fragments/header::scripts}"></div>
+</body>
+</html>

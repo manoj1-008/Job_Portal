@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/header::head('Analytics - JobPortal', 'Recruitment analytics')}"></head>
+<body>
+    <div th:replace="~{fragments/employer-sidebar::sidebar('Analytics', 'analytics')}"></div>
+
+    <!-- Stats Overview -->
+    <div class="row g-4 mb-5">
+        <div class="col-6 col-xl-3">
+            <div class="stats-card card">
+                <div class="stats-icon primary"><i class="fas fa-eye"></i></div>
+                <div class="stats-number count-up" th:attr="data-target=${analytics?.totalImpressions ?: 0}" th:text="${analytics?.totalImpressions ?: 0}">0</div>
+                <div class="stats-label">Total Impressions</div>
+            </div>
+        </div>
+        <div class="col-6 col-xl-3">
+            <div class="stats-card card">
+                <div class="stats-icon info"><i class="fas fa-mouse-pointer"></i></div>
+                <div class="stats-number" th:text="${analytics?.totalClicks ?: 0}">0</div>
+                <div class="stats-label">Total Clicks</div>
+            </div>
+        </div>
+        <div class="col-6 col-xl-3">
+            <div class="stats-card card">
+                <div class="stats-icon success"><i class="fas fa-file-alt"></i></div>
+                <div class="stats-number" th:text="${analytics?.totalApplications ?: 0}">0</div>
+                <div class="stats-label">Applications Received</div>
+            </div>
+        </div>
+        <div class="col-6 col-xl-3">
+            <div class="stats-card card">
+                <div class="stats-icon warning"><i class="fas fa-percentage"></i></div>
+                <div class="stats-number" th:text="${analytics?.conversionRate != null ? analytics.conversionRate + '%' : '0%'}">0%</div>
+                <div class="stats-label">Conversion Rate</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <!-- Applications by Month -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="fw-bold mb-0"><i class="fas fa-chart-bar me-2" style="color: var(--color-primary);"></i> Applications by Month</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="monthlyChart" height="250"></canvas>
+                </div>
+            </div>
+
+            <!-- Hiring Funnel -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="fw-bold mb-0"><i class="fas fa-filter me-2" style="color: var(--color-info);"></i> Hiring Funnel</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span style="font-size: var(--font-size-sm);">Applications</span>
+                            <span class="fw-semibold" th:text="${funnel?.applications ?: 0}">0</span>
+                        </div>
+                        <div class="progress" style="height: 24px;">
+                            <div class="progress-bar" th:style="'width: 100%; background: var(--gradient-primary);'" style="width: 100%;"></div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span style="font-size: var(--font-size-sm);">Reviewed</span>
+                            <span class="fw-semibold" th:text="${funnel?.reviewed ?: 0}">0</span>
+                        </div>
+                        <div class="progress" style="height: 24px;">
+                            <div class="progress-bar" th:style="'width: ' + (${funnel?.reviewedPercent} ?: 0) + '%; background: var(--gradient-secondary);'" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span style="font-size: var(--font-size-sm);">Shortlisted</span>
+                            <span class="fw-semibold" th:text="${funnel?.shortlisted ?: 0}">0</span>
+                        </div>
+                        <div class="progress" style="height: 24px;">
+                            <div class="progress-bar" th:style="'width: ' + (${funnel?.shortlistedPercent} ?: 0) + '%; background: var(--gradient-warning);'" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span style="font-size: var(--font-size-sm);">Interviewed</span>
+                            <span class="fw-semibold" th:text="${funnel?.interviewed ?: 0}">0</span>
+                        </div>
+                        <div class="progress" style="height: 24px;">
+                            <div class="progress-bar" th:style="'width: ' + (${funnel?.interviewedPercent} ?: 0) + '%; background: var(--gradient-accent);'" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span style="font-size: var(--font-size-sm);">Hired</span>
+                            <span class="fw-semibold" th:text="${funnel?.hired ?: 0}">0</span>
+                        </div>
+                        <div class="progress" style="height: 24px;">
+                            <div class="progress-bar" th:style="'width: ' + (${funnel?.hiredPercent} ?: 0) + '%; background: var(--gradient-success);'" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Top Locations -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="fw-bold mb-0"><i class="fas fa-map-marker-alt me-2" style="color: var(--color-primary);"></i> Top Locations</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="locationsChart" height="220"></canvas>
+                </div>
+            </div>
+
+            <!-- Top Skills -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="fw-bold mb-0"><i class="fas fa-code me-2" style="color: var(--color-info);"></i> Top Skills</h5>
+                </div>
+                <div class="card-body">
+                    <div th:if="${topSkills != null and !topSkills.isEmpty()}">
+                        <div th:each="skill : ${topSkills}" class="d-flex justify-content-between align-items-center mb-2">
+                            <span style="font-size: var(--font-size-sm);" th:text="${skill.name}">Skill</span>
+                            <span class="badge badge-primary" th:text="${skill.count}">0</span>
+                        </div>
+                    </div>
+                    <div th:if="${topSkills == null or topSkills.isEmpty()}" style="color: var(--text-muted); font-size: var(--font-size-sm);">No data available</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </main></div>
+    <div th:replace="~{fragments/header::scripts}"></div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('monthlyChart');
+        if (ctx) {
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+                    datasets: [{
+                        label: 'Applications',
+                        data: [/* server data */],
+                        backgroundColor: 'rgba(139,92,246,0.6)',
+                        borderColor: '#8b5cf6',
+                        borderWidth: 1,
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: 'rgba(255,255,255,0.5)' } },
+                        x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.5)' } }
+                    }
+                }
+            });
+        }
+        const locCtx = document.getElementById('locationsChart');
+        if (locCtx) {
+            new Chart(locCtx, {
+                type: 'polarArea',
+                data: {
+                    labels: [/* locations */],
+                    datasets: [{ data: [/* counts */], backgroundColor: ['rgba(139,92,246,0.7)','rgba(59,130,246,0.7)','rgba(6,182,212,0.7)','rgba(16,185,129,0.7)','rgba(245,158,11,0.7)'] }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { color: 'rgba(255,255,255,0.6)', padding: 12 } }
+                    },
+                    scales: { r: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { display: false } } }
+                }
+            });
+        }
+    });
+    </script>
+</body>
+</html>
+

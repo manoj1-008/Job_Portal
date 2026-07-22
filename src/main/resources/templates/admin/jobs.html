@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/header::head('Manage Jobs - JobPortal', 'Admin job management')}"></head>
+<body>
+    <div th:replace="~{fragments/admin-sidebar::sidebar('Manage Jobs', 'jobs')}"></div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form th:action="@{/admin/jobs}" method="get" class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label">Status</label>
+                    <select name="status" class="form-input">
+                        <option value="">All Status</option>
+                        <option value="active" th:selected="${#strings.equals(param.status, 'active')}">Active</option>
+                        <option value="inactive" th:selected="${#strings.equals(param.status, 'inactive')}">Inactive</option>
+                    </select>
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label">Search</label>
+                    <input type="text" name="keyword" class="form-input" placeholder="Search by title, company, or location..." th:value="${keyword}">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary-gradient w-100"><i class="fas fa-search"></i> Search</button>
+                </div>
+                <div class="col-md-2">
+                    <a th:href="@{/admin/jobs}" class="btn btn-secondary-glass w-100"><i class="fas fa-times"></i> Clear</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="row g-3 mb-4">
+        <div class="col-3"><div class="glass p-3 text-center" style="border-radius: var(--radius-lg);"><div class="fw-bold" th:text="${totalJobs ?: 0}">0</div><div style="font-size: var(--font-size-xs); color: var(--text-muted);">Total Jobs</div></div></div>
+        <div class="col-3"><div class="glass p-3 text-center" style="border-radius: var(--radius-lg);"><div class="fw-bold" th:text="${activeJobsCount ?: 0}">0</div><div style="font-size: var(--font-size-xs); color: var(--text-muted);">Active</div></div></div>
+        <div class="col-3"><div class="glass p-3 text-center" style="border-radius: var(--radius-lg);"><div class="fw-bold" th:text="${inactiveJobsCount ?: 0}">0</div><div style="font-size: var(--font-size-xs); color: var(--text-muted);">Inactive</div></div></div>
+        <div class="col-3"><div class="glass p-3 text-center" style="border-radius: var(--radius-lg);"><div class="fw-bold" th:text="${totalEmployers ?: 0}">0</div><div style="font-size: var(--font-size-xs); color: var(--text-muted);">Employers</div></div></div>
+    </div>
+
+    <!-- Jobs Table -->
+    <div class="card">
+        <div class="card-body p-0">
+            <div th:if="${jobs != null and !jobs.isEmpty()}">
+                <div class="table-responsive">
+                    <table class="table-glass">
+                        <thead>
+                            <tr>
+                                <th>Job Title</th>
+                                <th>Company</th>
+                                <th>Employer</th>
+                                <th>Location</th>
+                                <th>Posted</th>
+                                <th>Applicants</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="j : ${jobs}">
+                                <td><div class="fw-semibold" style="color: var(--text-primary); font-size: var(--font-size-sm);" th:text="${j.title()}">Title</div></td>
+                                <td style="font-size: var(--font-size-sm);" th:text="${j.company()}">Company</td>
+                                <td style="font-size: var(--font-size-sm);" th:text="${j.employerName()}">Employer</td>
+                                <td style="font-size: var(--font-size-sm);" th:text="${j.location()}">Location</td>
+                                <td style="font-size: var(--font-size-sm);" th:text="${#temporals.format(j.createdAt(), 'MMM dd')}">Date</td>
+                                <td><span class="fw-semibold" th:text="${j.applicationCount()}">0</span></td>
+                                <td><span class="status-badge" th:class="${j.active()} ? 'active' : 'inactive'" th:text="${j.active()} ? 'Active' : 'Inactive'">Status</span></td>
+                                <td>
+                                    <div class="d-flex gap-1">
+                                        <a th:href="@{'/admin/jobs/' + ${j.id()} + '/toggle'}" class="btn btn-ghost btn-icon btn-sm"
+                                           th:title="${j.active()} ? 'Deactivate' : 'Activate'">
+                                            <i th:class="${j.active()} ? 'fas fa-pause' : 'fas fa-play'" th:style="${j.active()} ? 'color: var(--color-warning);' : 'color: var(--color-success);'"></i>
+                                        </a>
+                                        <button class="btn btn-ghost btn-icon btn-sm" title="Delete" data-bs-toggle="modal"
+                                                data-bs-target="#deleteJobModal"
+                                                th:attr="data-job-id=${j.id()}, data-job-title=${j.title()}">
+                                            <i class="fas fa-trash" style="color: var(--color-danger);"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div th:if="${jobs == null or jobs.isEmpty()}" class="empty-state">
+                <div class="empty-icon"><i class="fas fa-briefcase"></i></div>
+                <h4>No jobs found</h4>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <div th:if="${totalPages > 1}" class="pagination mt-4 justify-content-center">
+        <div th:each="i : ${#numbers.sequence(0, totalPages - 1)}" class="page-item" th:classappend="${i == currentPage} ? 'active' : ''">
+            <a class="page-link" th:href="@{/admin/jobs(page=${i}, status=${param.status}, keyword=${param.keyword})}" th:text="${i + 1}">1</a>
+        </div>
+    </div>
+
+    <!-- Delete Modal -->
+    <div class="modal modal-glass fade" id="deleteJobModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header"><h5 class="modal-title fw-bold" style="color: var(--color-danger);">Delete Job</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                <div class="modal-body">
+                    <p style="color: var(--text-secondary);">Are you sure you want to deactivate <strong id="adminDeleteJobTitle">this job</strong>?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary-glass" data-bs-dismiss="modal">Cancel</button>
+                    <a th:href="@{/admin/jobs/}" id="adminDeleteJobConfirm" class="btn btn-danger"><i class="fas fa-trash"></i> Deactivate</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </main></div>
+    <div th:replace="~{fragments/header::scripts}"></div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const m = document.getElementById('deleteJobModal');
+        if (m) {
+            m.addEventListener('show.bs.modal', function(e) {
+                const b = e.relatedTarget;
+                document.getElementById('adminDeleteJobTitle').textContent = b.getAttribute('data-job-title') || 'this job';
+                document.getElementById('adminDeleteJobConfirm').href = '/admin/jobs/' + b.getAttribute('data-job-id') + '/delete';
+            });
+        }
+    });
+    </script>
+</body>
+</html>
+

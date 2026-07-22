@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/header::head('Applicants - JobPortal', 'Review job applicants')}"></head>
+<body>
+    <div th:replace="~{fragments/employer-sidebar::sidebar('Applicants', 'applicants')}"></div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form th:action="@{/employer/applicants}" method="get" class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label">Job</label>
+                    <select name="jobId" class="form-input">
+                        <option value="">All Jobs</option>
+                        <option th:each="job : ${employerJobs}" th:value="${job.id()}" th:text="${job.title()}"
+                                th:selected="${#strings.equals(param.jobId, #strings.toString(job.id()))}">Job</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Status</label>
+                    <select name="status" class="form-input">
+                        <option value="">All Status</option>
+                        <option value="PENDING" th:selected="${#strings.equals(param.status, 'PENDING')}">Pending</option>
+                        <option value="REVIEWING" th:selected="${#strings.equals(param.status, 'REVIEWING')}">Reviewing</option>
+                        <option value="SHORTLISTED" th:selected="${#strings.equals(param.status, 'SHORTLISTED')}">Shortlisted</option>
+                        <option value="REJECTED" th:selected="${#strings.equals(param.status, 'REJECTED')}">Rejected</option>
+                        <option value="HIRED" th:selected="${#strings.equals(param.status, 'HIRED')}">Hired</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Search</label>
+                    <input type="text" name="keyword" class="form-input" placeholder="Search by name or email..." th:value="${keyword}">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary-gradient w-100">
+                        <i class="fas fa-filter"></i> Filter
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Applicants Table -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold mb-0"><i class="fas fa-users me-2" style="color: var(--color-primary);"></i> Applicants</h5>
+            <span style="color: var(--text-muted); font-size: var(--font-size-sm);" th:text="${totalApplicants != null ? totalApplicants + ' total' : ''}">0</span>
+        </div>
+        <div class="card-body p-0">
+            <div th:if="${applicants != null and !applicants.isEmpty()}">
+                <div class="table-responsive">
+                    <table class="table-glass">
+                        <thead>
+                            <tr>
+                                <th>Applicant</th>
+                                <th>Job Position</th>
+                                <th>Applied</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="app : ${applicants}">
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="profile-avatar" style="width: 36px; height: 36px; font-size: 0.85rem;">
+                                            <span th:text="${#strings.substring(app.jobSeekerName(), 0, 1)}">U</span>
+                                        </div>
+                                        <div>
+                                            <div class="fw-semibold" style="color: var(--text-primary); font-size: var(--font-size-sm);" th:text="${app.jobSeekerName()}">Name</div>
+                                            <div style="font-size: var(--font-size-xs); color: var(--text-muted);" th:text="${app.jobSeekerEmail()}">Email</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="fw-semibold" style="font-size: var(--font-size-sm);" th:text="${app.jobTitle()}">Position</div>
+                                    <div style="font-size: var(--font-size-xs); color: var(--text-muted);" th:text="${app.companyName()}">Company</div>
+                                </td>
+                                <td style="font-size: var(--font-size-sm);" th:text="${#temporals.format(app.appliedAt(), 'MMM dd, yyyy')}">Date</td>
+                                <td>
+                                    <span class="status-badge" th:class="${app.status().name().toLowerCase()}" th:text="${app.status().name()}">Status</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-1">
+                                        <a th:href="@{'/employer/applicants/' + ${app.id()}}" class="btn btn-ghost btn-icon btn-sm" title="View Profile">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a th:href="@{'/employer/applicants/' + ${app.id()} + '/status?status=SHORTLISTED'}" class="btn btn-ghost btn-icon btn-sm" title="Shortlist" th:if="${app.status().name() == 'PENDING' or app.status().name() == 'REVIEWING'}">
+                                            <i class="fas fa-star" style="color: var(--color-warning);"></i>
+                                        </a>
+                                        <a th:href="@{'/employer/applicants/' + ${app.id()} + '/status?status=REJECTED'}" class="btn btn-ghost btn-icon btn-sm" title="Reject" th:if="${app.status().name() != 'REJECTED' and app.status().name() != 'HIRED'}">
+                                            <i class="fas fa-times" style="color: var(--color-danger);"></i>
+                                        </a>
+                                        <a th:href="@{'/employer/applicants/' + ${app.id()} + '/status?status=HIRED'}" class="btn btn-ghost btn-icon btn-sm" title="Hire" th:if="${app.status().name() == 'SHORTLISTED'}">
+                                            <i class="fas fa-check" style="color: var(--color-success);"></i>
+                                        </a>
+                                        <a th:href="@{'/student/resume/download/' + ${app.jobSeekerId()}}" class="btn btn-ghost btn-icon btn-sm" title="Download Resume" th:if="${app.hasResume()}">
+                                            <i class="fas fa-download" style="color: var(--color-info);"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div th:if="${applicants == null or applicants.isEmpty()}" class="empty-state">
+                <div class="empty-icon"><i class="fas fa-users"></i></div>
+                <h4>No applicants found</h4>
+                <p th:if="${param.jobId != null or param.status != null or param.keyword != null}">Try adjusting your filters to find applicants.</p>
+                <p th:if="${param.jobId == null and param.status == null and param.keyword == null}">Job seekers haven't applied to your jobs yet. Post more jobs to attract candidates.</p>
+                <a th:href="@{/employer/jobs/post}" class="btn btn-primary-gradient">
+                    <i class="fas fa-plus"></i> Post a Job
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <div th:if="${totalPages > 1}" class="pagination mt-4 justify-content-center">
+        <div th:each="i : ${#numbers.sequence(0, totalPages - 1)}" class="page-item" th:classappend="${i == currentPage} ? 'active' : ''">
+            <a class="page-link" th:href="@{/employer/applicants(page=${i}, jobId=${param.jobId}, status=${param.status}, keyword=${param.keyword})}" th:text="${i + 1}">1</a>
+        </div>
+    </div>
+
+    </main></div>
+    <div th:replace="~{fragments/header::scripts}"></div>
+</body>
+</html>
+

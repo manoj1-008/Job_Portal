@@ -1,0 +1,143 @@
+Index: jobportal/src/main/resources/templates/jobs/apply.html
+ID: job-apply
+==================================================================
+--- (new file)
++++ (new file)
+@@ -0,0 +1,175 @@
++<!DOCTYPE html>
++<html xmlns:th="http://www.thymeleaf.org"
++      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
++      lang="en">
++<head th:replace="~{fragments/header::head('Apply to ' + ${job.title()} + ' - JobPortal', 'Submit your application')}"></head>
++<body>
++    <div class="aurora-bg"></div>
++    <div class="aurora-blob aurora-blob-1"></div>
++    <div class="aurora-blob aurora-blob-2"></div>
++    <div class="mouse-glow"></div>
++
++    <nav th:replace="~{fragments/header::navbar}"></nav>
++
++    <div class="container py-4">
++        <div th:if="${job != null}" class="row justify-content-center">
++            <div class="col-lg-8">
++                <!-- Job Summary -->
++                <div class="glass-card-lg p-4 mb-4 fade-in">
++                    <div class="d-flex align-items-center gap-3">
++                        <div class="job-company-logo" style="width: 56px; height: 56px; font-size: 1.4rem;">
++                            <i class="fas fa-building"></i>
++                        </div>
++                        <div>
++                            <h4 class="fw-bold mb-1" th:text="${job.title()}">Job Title</h4>
++                            <div style="color: var(--text-secondary); font-size: var(--font-size-sm);">
++                                <span th:text="${job.company()}">Company</span>
++                                <span class="mx-2">·</span>
++                                <span th:text="${job.location()}">Location</span>
++                                <span class="mx-2">·</span>
++                                <span th:text="${job.employmentType()}">Type</span>
++                            </div>
++                        </div>
++                    </div>
++                </div>
++
++                <!-- Application Form -->
++                <div class="card">
++                    <div class="card-header">
++                        <h5 class="fw-bold mb-0"><i class="fas fa-file-alt me-2" style="color: var(--color-primary);"></i> Submit Your Application</h5>
++                    </div>
++                    <div class="card-body">
++                        <form th:action="@{'/jobs/apply/' + ${job.id()}}" th:object="${applyJobRequest}" method="post" enctype="multipart/form-data">
++
++                            <!-- Resume Selection -->
++                            <div class="form-group">
++                                <label class="form-label">Resume <span style="color: var(--color-danger);">*</span></label>
++                                <div th:if="${hasResume != null and hasResume}">
++                                    <div class="glass p-3 d-flex align-items-center justify-content-between mb-2" style="border-radius: var(--radius-md);">
++                                        <div class="d-flex align-items-center gap-2">
++                                            <i class="fas fa-file-pdf" style="color: var(--color-danger); font-size: 1.2rem;"></i>
++                                            <span th:text="${resumeFileName ?: 'resume.pdf'}">resume.pdf</span>
++                                        </div>
++                                        <label class="form-check mb-0">
++                                            <input type="radio" name="resumeOption" value="existing" checked>
++                                            <span class="form-check-label">Use this resume</span>
++                                        </label>
++                                    </div>
++                                </div>
++                                <div class="mt-2">
++                                    <label class="form-check">
++                                        <input type="radio" name="resumeOption" value="new" th:checked="${hasResume == null or !hasResume}">
++                                        <span class="form-check-label">Upload new resume</span>
++                                    </label>
++                                </div>
++                                <div class="mt-2" id="newResumeUpload" th:style="${hasResume != null and hasResume} ? 'display: none;' : ''">
++                                    <input type="file" name="resume" class="form-input" accept=".pdf,.doc,.docx">
++                                </div>
++                            </div>
++
++                            <!-- Cover Letter -->
++                            <div class="form-group">
++                                <label class="form-label">Cover Letter</label>
++                                <textarea name="coverLetter" class="form-input" rows="6" placeholder="Tell the employer why you're a great fit for this role..."></textarea>
++                                <div class="form-hint">Optional but highly recommended. Tailor your cover letter to this specific role.</div>
++                            </div>
++
++                            <!-- Portfolio Links -->
++                            <div class="form-group">
++                                <label class="form-label">Portfolio URL</label>
++                                <input type="url" name="portfolioUrl" class="form-input" placeholder="https://your-portfolio.com">
++                            </div>
++
++                            <!-- Additional Notes -->
++                            <div class="form-group">
++                                <label class="form-label">Additional Notes</label>
++                                <textarea name="additionalNotes" class="form-input" rows="3" placeholder="Any additional information you'd like to share..."></textarea>
++                            </div>
++
++                            <!-- Terms -->
++                            <div class="form-group">
++                                <label class="form-check">
++                                    <input type="checkbox" required>
++                                    <span class="form-check-label">
++                                        I confirm that the information provided is accurate and I agree to the
++                                        <a href="#" style="color: var(--color-primary);">Terms of Application</a>.
++                                    </span>
++                                </label>
++                            </div>
++
++                            <button type="submit" class="btn btn-primary-gradient btn-lg w-100">
++                                <i class="fas fa-paper-plane"></i> Submit Application
++                            </button>
++                        </form>
++                    </div>
++                </div>
++            </div>
++        </div>
++
++        <!-- Job Not Found -->
++        <div th:if="${job == null}" class="row justify-content-center">
++            <div class="col-lg-6">
++                <div class="empty-state">
++                    <div class="empty-icon"><i class="fas fa-briefcase"></i></div>
++                    <h4>Job not found</h4>
++                    <p>The job you're trying to apply to is no longer available.</p>
++                    <a th:href="@{/jobs}" class="btn btn-primary-gradient">Browse Jobs</a>
++                </div>
++            </div>
++        </div>
++    </div>
++
++    <footer th:replace="~{fragments/footer::footer}"></footer>
++    <div th:replace="~{fragments/header::scripts}"></div>
++    <script>
++    document.addEventListener('DOMContentLoaded', function() {
++        const radios = document.querySelectorAll('input[name="resumeOption"]');
++        const newUpload = document.getElementById('newResumeUpload');
++        if (radios.length && newUpload) {
++            radios.forEach(r => r.addEventListener('change', function() {
++                newUpload.style.display = this.value === 'new' ? '' : 'none';
++            }));
++        }
++    });
++    </script>
++</body>
++</html>
+

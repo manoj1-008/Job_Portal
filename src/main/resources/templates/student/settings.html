@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="en">
+<head th:replace="~{fragments/header::head('Settings - JobPortal', 'Manage your account settings')}"></head>
+<body>
+    <div th:replace="~{fragments/student-sidebar::sidebar('Settings', 'settings')}"></div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <!-- Theme Settings -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="fw-bold mb-0"><i class="fas fa-palette me-2" style="color: var(--color-primary);"></i> Appearance</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="fw-semibold">Dark Mode</div>
+                            <div style="color: var(--text-secondary); font-size: var(--font-size-sm);">Toggle between dark and light theme</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="settingsThemeToggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Change Password -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="fw-bold mb-0"><i class="fas fa-lock me-2" style="color: var(--color-warning);"></i> Change Password</h5>
+                </div>
+                <div class="card-body">
+                    <form th:action="@{/student/settings/change-password}" th:object="${changePasswordRequest}" method="post">
+                        <div class="form-group">
+                            <label class="form-label">Current Password</label>
+                            <input type="password" name="currentPassword" class="form-input" placeholder="Enter current password" required>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">New Password</label>
+                                    <input type="password" name="newPassword" class="form-input" placeholder="Enter new password" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Confirm New Password</label>
+                                    <input type="password" name="confirmPassword" class="form-input" placeholder="Confirm new password" required>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary-gradient">
+                            <i class="fas fa-save"></i> Update Password
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Email Preferences -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="fw-bold mb-0"><i class="fas fa-envelope me-2" style="color: var(--color-info);"></i> Email Preferences</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-3 pb-3" style="border-bottom: 1px solid var(--border-secondary);">
+                        <div>
+                            <div class="fw-semibold">Job Alerts</div>
+                            <div style="color: var(--text-secondary); font-size: var(--font-size-sm);">Receive notifications about new job matches</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between mb-3 pb-3" style="border-bottom: 1px solid var(--border-secondary);">
+                        <div>
+                            <div class="fw-semibold">Application Updates</div>
+                            <div style="color: var(--text-secondary); font-size: var(--font-size-sm);">Get notified when your application status changes</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="fw-semibold">Marketing Emails</div>
+                            <div style="color: var(--text-secondary); font-size: var(--font-size-sm);">Receive tips, resources, and career advice</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Danger Zone -->
+            <div class="card" style="border-color: rgba(239, 68, 68, 0.3);">
+                <div class="card-header" style="border-bottom-color: rgba(239, 68, 68, 0.15);">
+                    <h5 class="fw-bold mb-0" style="color: var(--color-danger);"><i class="fas fa-exclamation-triangle me-2"></i> Danger Zone</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="fw-semibold">Delete Account</div>
+                            <div style="color: var(--text-secondary); font-size: var(--font-size-sm);">Permanently delete your account and all data</div>
+                        </div>
+                        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                            <i class="fas fa-trash"></i> Delete Account
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="fw-bold mb-0"><i class="fas fa-shield-alt me-2" style="color: var(--color-success);"></i> Account Security</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center gap-3 mb-3 pb-3" style="border-bottom: 1px solid var(--border-secondary);">
+                        <div class="icon-wrapper success"><i class="fas fa-check"></i></div>
+                        <div>
+                            <div class="fw-semibold" style="font-size: var(--font-size-sm);">Email Verified</div>
+                            <div style="font-size: var(--font-size-xs); color: var(--text-muted);">your@email.com</div>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="icon-wrapper warning"><i class="fas fa-clock"></i></div>
+                        <div>
+                            <div class="fw-semibold" style="font-size: var(--font-size-sm);">Two-Factor Auth</div>
+                            <div style="font-size: var(--font-size-xs); color: var(--text-muted);">Coming soon</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Account Modal -->
+    <div class="modal modal-glass fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" style="color: var(--color-danger);"><i class="fas fa-exclamation-triangle me-2"></i> Delete Account</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p style="color: var(--text-secondary);">Are you sure you want to delete your account? This action cannot be undone. All your data, applications, and saved jobs will be permanently removed.</p>
+                    <div class="form-group">
+                        <label class="form-label">Type <strong>DELETE</strong> to confirm</label>
+                        <input type="text" class="form-input" id="deleteConfirm" placeholder="DELETE">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary-glass" data-bs-dismiss="modal">Cancel</button>
+                    <a th:href="@{/student/settings/delete-account}" class="btn btn-danger" id="deleteAccountBtn" disabled>
+                        <i class="fas fa-trash"></i> Delete My Account
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </main></div>
+    <div th:replace="~{fragments/header::scripts}"></div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const themeToggle = document.getElementById('settingsThemeToggle');
+        if (themeToggle) {
+            const currentTheme = localStorage.getItem('theme') || 'dark';
+            themeToggle.checked = currentTheme === 'dark';
+            themeToggle.addEventListener('change', function() {
+                const newTheme = this.checked ? 'dark' : 'light';
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+            });
+        }
+
+        const deleteConfirm = document.getElementById('deleteConfirm');
+        const deleteBtn = document.getElementById('deleteAccountBtn');
+        if (deleteConfirm && deleteBtn) {
+            deleteConfirm.addEventListener('input', function() {
+                deleteBtn.disabled = this.value !== 'DELETE';
+                deleteBtn.style.opacity = this.value === 'DELETE' ? '1' : '0.5';
+                deleteBtn.style.pointerEvents = this.value === 'DELETE' ? 'auto' : 'none';
+            });
+        }
+    });
+    </script>
+</body>
+</html>
+
