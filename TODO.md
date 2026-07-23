@@ -1,22 +1,28 @@
-# Online Job Portal - Fix Status
+# Role Seeding Fix - Progress
 
-## ✅ Completed Fixes
+## Problem
+Both Student and Employer registration fail with "Invalid role" errors on fresh deployments because the `roles` table is never seeded.
 
-### Java Backend Fixes
-- ✅ `JobServiceImpl.java` - Fixed `buildPageable` method and `getAllActiveJobs()` to use `findByActiveTrue()` (removed deadline filter so all 50 demo jobs display)
-- ✅ `JobServiceImpl.java` - Removed corrupted `countJobsByUser` duplicate, fixed all compile errors
+## Root Cause
+- No `CommandLineRunner`, `data.sql`, or `@PostConstruct` method exists to insert roles on startup
+- With a fresh PostgreSQL database, the `roles` table is empty
+- `roleRepository.findByName("ROLE_JOBSEEKER")` returns empty, throwing `BadRequestException`
 
-### HTML Template Fixes
-- ✅ `about.html` - Fixed all missing closing divs for glass-card, row, col, section tags
-- ✅ `browse.html` - Fixed broken HTML in search form, properly closed all divs, proper row/col structure
-- ✅ `student/profile.html` - Added `word-break: break-all; overflow-wrap: break-word` to email/phone fields, fixed div structure
-- ✅ `student/dashboard.html` - Fixed missing closing divs, proper card structure
-- ✅ `employer/dashboard.html` - Fixed div nesting, proper row/col structure
-- ✅ `admin/dashboard.html` - Fixed div nesting, proper structure
-- ✅ `auth/student-register.html` - Fixed HTML structure
-- ✅ `auth/employer-register.html` - Fixed HTML structure
+## Files Modified (2)
 
-### Still To Verify
-- ⬜ Sidebar fragments - Need to verify structural integrity
-- ⬜ Maven build verification
-- ⬜ Test all UI pages render correctly
+### ✅ `src/main/java/com/onlinejobportal/JobportalApplication.java`
+- Added `@Slf4j` annotation
+- Added `seedRoles(CommandLineRunner)` bean
+- On startup, checks if each role exists via `existsByName()`
+- If missing, inserts: `ROLE_ADMIN`, `ROLE_EMPLOYER`, `ROLE_JOBSEEKER`
+- Fully idempotent: safe for repeated restarts
+
+### ✅ `src/main/resources/application.properties`
+- Added `spring.jpa.defer-datasource-initialization=true`
+- Ensures Hibernate DDL creates tables BEFORE the `CommandLineRunner` runs
+- Prevents timing issues where roles try to insert before the roles table exists
+
+## No Other Files Changed
+- All registration logic, controllers, services, security config, HTML templates already use consistent role names: `ROLE_JOBSEEKER` and `ROLE_EMPLOYER`
+- No other modifications needed
+
