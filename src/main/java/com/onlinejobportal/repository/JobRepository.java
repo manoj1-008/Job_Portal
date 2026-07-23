@@ -10,11 +10,16 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface JobRepository extends JpaRepository<Job, Long> {
 
     List<Job> findByActiveTrue();
+
+    Optional<Job> findByTitleAndCompany(String title, String company);
+
+    boolean existsByTitleAndCompany(String title, String company);
 
     Page<Job> findByActiveTrue(Pageable pageable);
 
